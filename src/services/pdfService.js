@@ -182,6 +182,23 @@ export class PDFService {
 
     this.doc.setFont('helvetica', 'bold');
     this.doc.text('NOMBRE:', 11, 60);
+
+    // Campos de fecha
+    this.doc.setFontSize(8);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.text('DIA', 33, 66);
+    this.doc.line(30, 63, 30, 72); // Línea vertical
+    this.doc.text('MES', 45, 66);
+    this.doc.line(42, 63, 42, 72); // Línea vertical
+    this.doc.text('AÑO', 66, 66);
+    this.doc.line(57, 63, 57, 72); // Línea vertical
+
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.rect(10, 63, 75, 9); // Hora reporte llegada
+    this.doc.text('FECHA', 12, 68);
+
+    
     
   }
 
