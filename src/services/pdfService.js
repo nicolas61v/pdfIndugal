@@ -4,6 +4,7 @@ import { jsPDF } from 'jspdf';
 export class PDFService {
   constructor() {
     this.doc = null;
+    this.logoPath = '/images/LOGO INDUGAL(1).png';
   }
 
   initDocument() {
@@ -16,37 +17,90 @@ export class PDFService {
     this.doc.setDrawColor(0);
   }
 
-  drawHeader() {
-    // Espacio del logo
-    this.doc.rect(10, 5, 40, 20);
+  async addLogo() {
+    try {
+      // Construir la URL completa usando el path base de la aplicación
+      const logoUrl = `${window.location.origin}${this.logoPath}`;
+      
+      // Convertir la imagen a base64
+      const imgData = await this.urlToBase64(logoUrl);
+      
+      // Obtener las propiedades de la imagen
+      const imgProps = this.doc.getImageProperties(imgData);
+      const aspectRatio = imgProps.width / imgProps.height;
 
+      // Dimensiones máximas del rectángulo
+      const maxWidth = 40;
+      const maxHeight = 20;
+
+      // Calcular dimensiones finales manteniendo proporción
+      let width = maxWidth;
+      let height = width / aspectRatio;
+
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = height * aspectRatio;
+      }
+
+      // Centrar la imagen en el rectángulo
+      const x = 10 + (maxWidth - width) / 2;
+      const y = 5 + (maxHeight - height) / 2;
+
+      // Agregar la imagen y el rectángulo
+      this.doc.addImage(imgData, 'PNG', x, y, width, height);
+      this.doc.rect(10, 5, 40, 20);
+    } catch (error) {
+      console.error('Error al cargar el logo:', error);
+      // Si hay error, solo dibujamos el rectángulo
+      this.doc.rect(10, 5, 40, 20);
+    }
+  }
+
+  async urlToBase64(url) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      throw new Error('Error al convertir URL a base64');
+    }
+  }
+
+  drawHeader() {
     // Texto del encabezado
-    this.doc.setFontSize(10);
+    this.doc.setFontSize(9);
+    this.doc.setFont('helvetica', 'bold');
     this.doc.text(
       'MEDELLÍN Calle 36 No. 52-50 PBX: 4444-314 Auxiliar 232 59 57 CEL: 321760 81 74',
       55,
-      10
+      5
     );
 
     // Título principal
-    this.doc.setFontSize(14);
+    this.doc.setFontSize(12);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('RECEPCIÓN DE PRODUCTO', 90, 20);
+    this.doc.text('RECEPCIÓN DE PRODUCTO', 80, 10);
 
     // Texto adicional en rojo
     this.doc.setTextColor(255, 0, 0);
-    this.doc.setFontSize(8);
+    this.doc.setFontSize(7);
     this.doc.text(
-      'PASADOS 3 DÍAS DE LA PROMESA DE ENTREGA NO SE RESPONDE POR INCONFORMIDAD POR',
+      'PASADOS 2 DÍAS DE LA PROMESA DE ENTREGA NO SE RESPONDE POR INCONFORMIDAD POR',
       55,
-      25
+      15
     );
     this.doc.text(
       'DETERIORO EN NUESTROS PROCESOS Y PRODUCTO. SE COBRARÁ BODEGAJE A PARTIR DEL',
       55,
-      29
+      19
     );
-    this.doc.text('3er DÍA DE LA FECHA DE PROMESA DE ENTREGA.', 55, 33);
+    this.doc.text('3er DÍA DE LA FECHA DE PROMESA DE ENTREGA.',
+      55, 23);
     this.doc.setTextColor(0, 0, 0);
   }
 
@@ -82,6 +136,29 @@ export class PDFService {
     });
   }
 
+  drawTimeSection() {
+    // Sección de tiempos
+    this.doc.setFontSize(8);
+    this.doc.rect(10, 60, 90, 30);
+    
+    // Campos de hora
+    this.doc.text('HORA REPORTE LLEGADA', 12, 65);
+    this.doc.text('HORA INICIO DESPACHO', 12, 72);
+    this.doc.text('HORA FINAL DESPACHO Y SALIDA', 12, 79);
+    
+    // Líneas para las horas
+    this.doc.line(60, 64, 80, 64);
+    this.doc.line(60, 71, 80, 71);
+    this.doc.line(60, 78, 80, 78);
+    
+    // Campos R/E
+    this.doc.text('RECEPCIÓN ENTREGA', 12, 85);
+    this.doc.rect(60, 82, 4, 4); // R
+    this.doc.rect(70, 82, 4, 4); // E
+    this.doc.text('R', 61, 85);
+    this.doc.text('E', 71, 85);
+  }
+
   drawMainForm() {
     // Campos principales del formulario
     this.doc.rect(10, 40, 130, 10); // Campo empresa
@@ -92,20 +169,6 @@ export class PDFService {
 
     this.doc.rect(90, 52, 50, 10); // Responsable que ordenó facturar
     this.doc.text('RESPONSABLE QUIEN ORDENÓ FACTURAR', 92, 57);
-
-    // Fechas y horas
-    this.doc.rect(10, 65, 50, 20);
-    this.doc.text('HORA REPORTE LLEGADA', 12, 70);
-    this.doc.text('HORA INICIO DESPACHO', 12, 75);
-    this.doc.text('HORA FINAL DESPACHO Y SALIDA', 12, 80);
-
-    // Recepción entrega
-    this.doc.rect(65, 65, 20, 20);
-    this.doc.text('RECEPCIÓN ENTREGA', 67, 70);
-    this.doc.text('R', 67, 75);
-    this.doc.text('E', 72, 75);
-    this.doc.rect(66, 76, 4, 4); // Opción R
-    this.doc.rect(71, 76, 4, 4); // Opción E
   }
 
   drawProductTable() {
@@ -122,11 +185,13 @@ export class PDFService {
     this.doc.text('CÓDIGO REF.', 85, 100);
   }
 
-  generatePDF(data = {}) {
+  async generatePDF(data = {}) {
     this.initDocument();
+    await this.addLogo(); // Ahora addLogo es asíncrono
     this.drawHeader();
     this.drawChecklist();
     this.drawMainForm();
+    this.drawTimeSection();
     this.drawProductTable();
     return this.doc;
   }

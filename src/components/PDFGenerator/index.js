@@ -6,33 +6,50 @@ import { pdfService } from '@/services/pdfService';
 
 const PDFGenerator = () => {
   const [formData, setFormData] = useState({
-    number: '',
-    date: '',
-    description: '',
-    // Agregar más campos según necesidad
+    empresa: '',
+    responsableTrae: '',
+    responsableFacturar: '',
+    horaLlegada: '',
+    horaInicio: '',
+    horaFinal: '',
+    recepcionEntrega: '', // R o E
+    descripcion: '',
+    linea: '',
+    procesoRef: '',
+    codigoRef: '',
+    excesosGrasas: false,
+    excesosOxidacion: false,
+    excesosCalamina: false,
+    pintura: false,
+    recubrimientoBuque: false,
+    stickers: false,
+    soldaduraMalEscoriada: false,
+    perforacionDe: false,
+    drenaje: false,
+    otros: ''
   });
 
-  const handleGeneratePDF = () => {
+  const handleGeneratePDF = async () => {
     try {
-      const doc = pdfService.generatePDF(formData);
-      pdfService.savePDF('factura.pdf');
+      const doc = await pdfService.generatePDF(formData);
+      pdfService.savePDF('recepcion-producto.pdf');
     } catch (error) {
       console.error('Error al generar PDF:', error);
-      // Aquí puedes manejar el error como prefieras
+      // Aquí podrías mostrar un mensaje de error al usuario
     }
   };
 
   const handleFormChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Generador de Documentos</h1>
+      <h1 className="text-2xl font-bold mb-4">Recepción de Producto</h1>
       <PDFForm 
         formData={formData} 
         onChange={handleFormChange} 
