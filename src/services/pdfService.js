@@ -155,39 +155,52 @@ export class PDFService {
     this.doc.text('de su producto terminado', 247, 27);
   }
 
+  drawMainForm() {
+    // Campos principales del formulario
+    this.doc.setFontSize(8);
+    this.doc.text('EMPRESA QUIEN TRAE EL PRODUCTO SI APLICA', 12, 30);
+    this.doc.rect(10, 27, 75, 9); // Línea horizontal
+
+    this.doc.rect(10, 37, 75, 9); // Responsable que trae el producto
+    this.doc.text('NOMBRE RESPONSABLE QUIEN TRAE EL PRODUCTO', 11, 40);
+    
+    this.doc.rect(90, 27, 85, 9); // factura a nombre de
+    this.doc.text('FACTURAR A NOMBRE DE', 110, 30);
+
+    this.doc.rect(90, 37, 85, 9); // Responsable que ordenó facturar
+    this.doc.text('RESPONSABLE QUIEN ORDENÓ FACTURAR', 100, 40);
+
+    this.doc.setFontSize(7);
+    this.doc.rect(10, 47, 75, 15); // Responsable que trae el producto
+    this.doc.text('TIEMPO PARA LA ENTREGA DEL PRODUCTO SUGERIDO POR', 10, 50);
+
+    this.doc.text('CLIENTE', 11, 55);
+    this.doc.rect(23, 53, 3, 3);
+
+    this.doc.text('INDUSTRIAS Y GALVANIZADOS', 31, 55);
+    this.doc.rect(70, 53, 3, 3);
+
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('NOMBRE:', 11, 60);
+    
+  }
+
   drawTimeSection() {
     // Sección de tiempos
     this.doc.setFontSize(8);
-    this.doc.rect(10, 60, 90, 30);
+    this.doc.rect(90, 47, 85, 30);
     
     // Campos de hora
-    this.doc.text('HORA REPORTE LLEGADA', 12, 65);
-    this.doc.text('HORA INICIO DESPACHO', 12, 72);
-    this.doc.text('HORA FINAL DESPACHO Y SALIDA', 12, 79);
-    
-    // Líneas para las horas
-    this.doc.line(60, 64, 80, 64);
-    this.doc.line(60, 71, 80, 71);
-    this.doc.line(60, 78, 80, 78);
+    this.doc.text('HORA REPORTE LLEGADA', 92, 51);
+    this.doc.text('HORA INICIO DESPACHO', 92, 58);
+    this.doc.text('HORA FINAL DESPACHO Y SALIDA', 92, 65);
     
     // Campos R/E
-    this.doc.text('RECEPCIÓN ENTREGA', 12, 85);
-    this.doc.rect(60, 82, 4, 4); // R
-    this.doc.rect(70, 82, 4, 4); // E
-    this.doc.text('R', 61, 85);
-    this.doc.text('E', 71, 85);
-  }
-
-  drawMainForm() {
-    // Campos principales del formulario
-    this.doc.rect(10, 40, 130, 10); // Campo empresa
-    this.doc.text('EMPRESA QUIEN TRAE EL PRODUCTO SI APLICA', 12, 45);
-
-    this.doc.rect(10, 52, 70, 10); // Responsable que trae el producto
-    this.doc.text('NOMBRE RESPONSABLE QUIEN TRAE EL PRODUCTO', 12, 57);
-
-    this.doc.rect(90, 52, 50, 10); // Responsable que ordenó facturar
-    this.doc.text('RESPONSABLE QUIEN ORDENÓ FACTURAR', 92, 57);
+    this.doc.text('RECEPCIÓN ENTREGA', 92, 72);
+    this.doc.rect(160, 82, 4, 4); // R
+    this.doc.rect(170, 82, 4, 4); // E
+    this.doc.text('R', 161, 85);
+    this.doc.text('E', 171, 85);
   }
 
   drawProductTable() {
