@@ -194,13 +194,18 @@ export class PDFService {
     this.doc.text('HORA REPORTE LLEGADA', 92, 51);
     this.doc.text('HORA INICIO DESPACHO', 92, 58);
     this.doc.text('HORA FINAL DESPACHO Y SALIDA', 92, 65);
+
+    // Campos de hora (inputw)
+    this.doc.rect(141, 48, 33, 5);
+    this.doc.rect(141, 55, 33, 5);
+    this.doc.rect(141, 62, 33, 5);
     
     // Campos R/E
     this.doc.text('RECEPCIÓN ENTREGA', 92, 72);
-    this.doc.rect(160, 82, 4, 4); // R
-    this.doc.rect(170, 82, 4, 4); // E
-    this.doc.text('R', 161, 85);
-    this.doc.text('E', 171, 85);
+    this.doc.rect(150, 69, 4, 4); // R
+    this.doc.rect(160, 69, 4, 4); // E
+    this.doc.text('R', 147, 72);
+    this.doc.text('E', 157, 72);
   }
 
   drawProductTable() {
