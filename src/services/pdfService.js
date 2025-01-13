@@ -84,30 +84,31 @@ export class PDFService {
     // Título principal
     this.doc.setFontSize(12);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('RECEPCIÓN DE PRODUCTO', 80, 10);
+    this.doc.text('RECEPCIÓN DE PRODUCTO', 85, 10);
 
     // Texto adicional en rojo
     this.doc.setTextColor(255, 0, 0);
     this.doc.setFontSize(7);
     this.doc.text(
       'PASADOS 2 DÍAS DE LA PROMESA DE ENTREGA NO SE RESPONDE POR INCONFORMIDAD POR',
-      55,
+      57,
       15
     );
     this.doc.text(
       'DETERIORO EN NUESTROS PROCESOS Y PRODUCTO. SE COBRARÁ BODEGAJE A PARTIR DEL',
-      55,
+      57,
       19
     );
     this.doc.text('3er DÍA DE LA FECHA DE PROMESA DE ENTREGA.',
-      55, 23);
+      57, 23);
     this.doc.setTextColor(0, 0, 0);
   }
 
   drawChecklist() {
     // Título del checklist
     this.doc.setFontSize(8);
-    this.doc.text('Aspectos a considerar Si Aplica:', 200, 15);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('Aspectos a considerar Si Aplica:', 180, 5);
 
     const aspectos = [
       'Exceso de Grasas',
@@ -122,18 +123,36 @@ export class PDFService {
       'Otros y que tiene a considerar:'
     ];
 
-    let y = 20;
+    let y = 10;
     aspectos.forEach((aspecto) => {
-      this.doc.text(aspecto, 200, y);
+      this.doc.text(aspecto, 180, y);
 
       // Cuadros de opciones SI/NO
-      this.doc.rect(260, y - 3, 4, 4); // SI
-      this.doc.text('SI', 265, y);
-      this.doc.rect(270, y - 3, 4, 4); // NO
-      this.doc.text('NO', 275, y);
+      this.doc.rect(230, y - 2, 4, 3); // SI
+      this.doc.text('SI', 227, y);
+      this.doc.rect(240, y - 2, 4, 3); // NO
+      this.doc.text('NO', 235, y);
 
-      y += 5;
+      y += 4;
     });
+  }
+
+  drawClientInfo() {
+    //Requisitos del cliente
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('Señor Cliente:', 247, 5);
+
+    //texto informativo
+    this.doc.setFontSize(8);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.text('Es un requisito nuestro, que todo', 247, 9);
+    this.doc.text('producto para procesos debe venir', 247, 12);
+    this.doc.text('documentado, especificando referencia', 247, 15);
+    this.doc.text('o nombre de cada producto y proceso', 247, 18);
+    this.doc.text('a aplicar unidades y/o kilogramos en lo', 247, 21);
+    this.doc.text('posible fecha y hora de requerimiento', 247, 24);
+    this.doc.text('de su producto terminado', 247, 27);
   }
 
   drawTimeSection() {
@@ -190,6 +209,7 @@ export class PDFService {
     await this.addLogo(); // Ahora addLogo es asíncrono
     this.drawHeader();
     this.drawChecklist();
+    this.drawClientInfo();
     this.drawMainForm();
     this.drawTimeSection();
     this.drawProductTable();
