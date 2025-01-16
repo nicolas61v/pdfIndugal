@@ -219,21 +219,32 @@ export class PDFService {
     this.doc.setFontSize(6);
     
     // Campos de hora con líneas
-    this.doc.text('HORA REPORTE LLEGADA', 92, 51);
-    this.doc.line(141, 53, 174, 53);
+    this.doc.text('HORA REPORTE LLEGADA', 77, 42);
+    this.doc.rect(118, 39, 28, 5);
     
-    this.doc.text('HORA INICIO DESPACHO', 92, 58);
-    this.doc.line(141, 60, 174, 60);
+    this.doc.text('HORA INICIO DESPACHO', 77, 48);
+    this.doc.rect(118, 45, 28, 5);
     
-    this.doc.text('HORA FINAL DESPACHO Y SALIDA', 92, 65);
-    this.doc.line(141, 67, 174, 67);
+    this.doc.text('HORA FINAL DESPACHO Y SALIDA', 77, 54);
+    this.doc.rect(118, 51, 28, 5);
     
     // R/E con líneas pequeñas
-    this.doc.text('RECEPCIÓN ENTREGA', 92, 72);
-    this.doc.text('R', 147, 72);
-    this.doc.line(150, 73, 154, 73);
-    this.doc.text('E', 157, 72);
-    this.doc.line(160, 73, 164, 73);
+    this.doc.text('RECEPCIÓN ENTREGA', 77,60);
+    this.doc.rect(118, 57, 28, 5);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.setFontSize(10);
+    this.doc.text('R', 122, 61);
+    this.doc.rect(125, 58, 3, 3);
+    this.doc.text('E', 133, 61);
+    this.doc.rect(136, 58, 3, 3);
+    this.doc.setFont('helvetica', 'normal');
+  }
+
+  drawFecha() {
+    this.doc.setFontSize(6);
+    this.doc.text('FECHA :', 150, 21);
+    this.doc.rect(160, 18, 32, 15);
+    this.doc.text('HORA :', 150, 31);
   }
 
   drawProductTable() {
@@ -252,13 +263,14 @@ export class PDFService {
 
   async generatePDF(data = {}) {
     this.initDocument();
-    await this.addLogo(); // Ahora addLogo es asíncrono
+    await this.addLogo();
     this.drawHeader();
     this.drawChecklist();
     this.drawClientInfo();
     this.drawMainForm();
     this.drawTimeSection();
     this.drawProductTable();
+    this.drawFecha();
     return this.doc;
   }
 
