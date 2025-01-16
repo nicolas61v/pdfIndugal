@@ -159,12 +159,12 @@ export class PDFService {
     this.doc.setFontSize(8);
     this.doc.setFont('helvetica', 'normal');
     this.doc.text('Es un requisito nuestro, que todo', 247, 9);
-    this.doc.text('producto para procesos debe venir', 247, 12);
-    this.doc.text('documentado, especificando referencia', 247, 15);
-    this.doc.text('o nombre de cada producto y proceso', 247, 18);
-    this.doc.text('a aplicar unidades y/o kilogramos en lo', 247, 21);
-    this.doc.text('posible fecha y hora de requerimiento', 247, 24);
-    this.doc.text('de su producto terminado', 247, 27);
+    this.doc.text('producto para procesos debe venir', 247, 13);
+    this.doc.text('documentado, especificando referencia', 247, 17);
+    this.doc.text('o nombre de cada producto y proceso', 247, 21);
+    this.doc.text('a aplicar unidades y/o kilogramos en lo', 247, 25);
+    this.doc.text('posible fecha y hora de requerimiento', 247, 29);
+    this.doc.text('de su producto terminado', 247, 33);
   }
 
   drawMainForm() {
@@ -241,15 +241,61 @@ export class PDFService {
   }
 
   drawFecha() {
+    // Fecha superior
     this.doc.setFontSize(6);
-    this.doc.text('FECHA :', 150, 21);
-    this.doc.rect(160, 18, 32, 15);
+    this.doc.text('FECHA :', 150, 22);
     this.doc.text('HORA :', 150, 31);
+
+    this.doc.text('DIA', 162, 20);
+    this.doc.text('MES', 173, 20);
+    this.doc.text('AÑO', 184, 20);
+
+    this.doc.rect(160, 18, 33, 15);
+    this.doc.line(160, 21, 193, 21);
+    // Líneas verticales
+    this.doc.line(160, 18, 160, 27);
+    this.doc.line(171, 18, 171, 27);
+    this.doc.line(182, 18, 182, 27);
+    // Separador hora
+    this.doc.line(160, 27, 193, 27);    
+
+    // Fecha inferior (10mm más abajo)
+    this.doc.text('FECHA :', 150, 45); // 5mm a la izquierda
+    this.doc.text('HORA :', 150, 53); // 5mm a la izquierda
+
+    this.doc.text('DIA', 162, 43); // 5mm a la izquierda
+    this.doc.text('MES', 173, 43); // 5mm a la izquierda
+    this.doc.text('AÑO', 184, 43); // 5mm a la izquierda
+
+    this.doc.rect(160, 41, 29.7, 13.5); // 5mm a la izquierda
+    this.doc.line(160, 44, 189.7, 44); // 5mm a la izquierda
+    // Líneas verticales
+    this.doc.line(160, 41, 160, 49.5); // 5mm a la izquierda
+    this.doc.line(169.7, 41, 169.7, 49.5); // 5mm a la izquierda
+    this.doc.line(179.4, 41, 179.4, 49.5); // 5mm a la izquierda
+    // Separador hora
+    this.doc.line(160, 49.5, 189.7, 49.5); // 5mm a la izquierda
+
+    //texto de compromiso
+    this.doc.line(195,40,245,40);
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('compromiso    de    entrega', 200, 45);
+    this.doc.text('del producto ya procesado', 200, 49);
+    this.doc.text('y facturado', 200, 53);
+
+    // Dibujar flecha hacia la izquierda
+    this.doc.setDrawColor(0, 0, 0); // Color negro
+    this.doc.setLineWidth(0.5);
+    this.doc.line(192, 46, 200, 46); // Línea horizontal
+    this.doc.line(192, 46, 195, 44); // Línea diagonal hacia arriba
+    this.doc.line(192, 46, 195, 48); // Línea diagonal hacia abajo
   }
 
   drawProductTable() {
     // Tabla de productos
     this.doc.rect(10, 90, 275, 60);
+    this.doc.setFont('helvetica', 'normal');
     this.doc.setFontSize(8);
     this.doc.text('DESCRIPCIÓN DEL PRODUCTO Y OBSERVACIONES', 110, 95);
 
