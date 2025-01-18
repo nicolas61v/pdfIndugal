@@ -292,19 +292,103 @@ export class PDFService {
     this.doc.line(192, 46, 195, 48); // Línea diagonal hacia abajo
   }
 
+  drawDocumento(){
+    this.doc.rect(250,38,40,14);
+    this.doc.text('DOCUMENTO', 261, 41);
+  }
+
   drawProductTable() {
     // Tabla de productos
-    this.doc.rect(10, 90, 275, 60);
-    this.doc.setFont('helvetica', 'normal');
-    this.doc.setFontSize(8);
-    this.doc.text('DESCRIPCIÓN DEL PRODUCTO Y OBSERVACIONES', 110, 95);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.setFontSize(10);
+    this.doc.text('DESCRIPCIÓN DEL PRODUCTO Y OBSERVACIONES', 72, 68);
+
+    // Dibujar renglones alternados
+    const startY = 69;
+    const rowHeight = 4.6; // Altura de cada renglón
+    const numRows = 10;
+
+    for (let i = 0; i < numRows; i++) {
+      const y = startY + (i * rowHeight);
+      if (i % 2 === 0) {
+        // Renglón gris
+        this.doc.setFillColor(220, 220, 220); // Gris claro
+        this.doc.rect(5, y, 285, rowHeight, 'F');
+      }
+    }
+
+    // Dibujar líneas verticales
+    this.doc.setDrawColor(0, 0, 0)
+  
 
     // Columnas
-    this.doc.text('LINEA', 12, 100);
-    this.doc.line(40, 90, 40, 150); // Línea vertical
-    this.doc.text('PROCESO REF.', 45, 100);
-    this.doc.line(80, 90, 80, 150); // Línea vertical
-    this.doc.text('CÓDIGO REF.', 85, 100);
+    //linea horizontal superior
+    this.doc.line(5, 65, 190, 65); // Línea horizontal
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.setFontSize(7);
+    this.doc.line(5, 65, 5, 69); // Línea vertical
+    this.doc.text('LINEA', 6, 68);
+    this.doc.line(17, 65, 17, 115); // Línea vertical
+    this.doc.text('PROCESO REF.', 18, 68);
+    this.doc.line(40, 65, 40, 115); // Línea vertical
+    this.doc.text('CÓDIGO REF.', 41, 68);
+    this.doc.line(60, 65, 60, 115); // Línea vertical
+  }
+
+  drawRectangulo(){
+    this.doc.setLineWidth(0.3);
+    this.doc.rect(5, 69, 285, 46);
+    this.doc.line(5, 65, 190, 65); // Línea horizontal
+    this.doc.line(5, 65, 5, 69); // Línea vertical
+    
+  }
+
+  drawDetails() {
+    this.doc.setFontSize(6);
+    this.doc.setLineWidth(0.3);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.line(190, 56, 290, 56); // Línea horizontal
+
+
+    this.doc.line(190, 56, 190, 115); // Línea vertical
+    this.doc.text('DOCUMENTO', 191, 59);
+    this.doc.text('CLIENTE', 193, 62);
+
+    this.doc.line(206, 56, 206, 115);
+    this.doc.text('UNIDS', 207, 61);
+
+    this.doc.line(215, 56, 215, 115); // Línea vertical
+    this.doc.text('PESO', 217, 59);
+    this.doc.text('BRUTO', 217, 62);
+    this.doc.text('ENTRADA', 216, 65);
+
+    this.doc.line(229, 56, 229, 115); // Línea vertical
+    this.doc.text('RECIPIENTES', 230, 60);
+    this.doc.line(229, 62, 245, 62); // Línea horizontal
+    this.doc.text('UNID', 230, 65);
+    this.doc.line(235, 62, 235, 115); // Línea vertical
+    this.doc.text('PESO', 237, 65);
+
+    this.doc.line(245, 56, 245, 115); // Línea vertical
+    this.doc.text('PESO', 250, 59);
+    this.doc.text('NETO', 250, 62);
+    this.doc.text('ENTRADA', 248, 65);
+
+    this.doc.line(260, 56, 260, 115); // Línea vertical
+    this.doc.text('PESO', 265, 59);
+    this.doc.text('BRUTO', 264, 62);
+    this.doc.text('SALIDA', 264, 65);
+
+    this.doc.line(275, 56, 275, 115); // Línea vertical
+    this.doc.text('PESO', 278, 59);
+    this.doc.text('NETO', 278, 62);
+    this.doc.text('SALIDA', 277, 65);
+    this.doc.line(290, 56, 290, 115);
+
+    this.doc.line(250, 53, 290, 53); // Línea horizontal
+    this.doc.text('Código: F-IG-098 05042024', 255, 55);
+    this.doc.line(250, 53, 250, 56); // Línea vertical
+    this.doc.line(290, 53, 290, 56); // Línea vertical
   }
 
   async generatePDF(data = {}) {
@@ -316,9 +400,13 @@ export class PDFService {
     this.drawMainForm();
     this.drawTimeSection();
     this.drawProductTable();
+    this.drawDocumento();
     this.drawFecha();
+    this.drawRectangulo();
+    this.drawDetails();
     return this.doc;
   }
+
 
   savePDF(filename = 'recepcion-producto.pdf') {
     if (!this.doc) {
