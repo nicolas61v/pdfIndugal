@@ -448,7 +448,10 @@ export class PDFService {
   drawFormData(formData) {
     if (!formData) return;
 
-    this.doc.setFontSize(8);
+    // Configurar estilo para datos del formulario
+    this.doc.setFontSize(9); // Ligeramente más grande
+    this.doc.setFont('helvetica', 'italic'); // Fuente en cursiva
+    this.doc.setTextColor(0, 51, 153); // Color azul (RGB)
     
     // Dibujar datos de empresa y responsables
     if (formData.empresa) {
@@ -482,17 +485,23 @@ export class PDFService {
 
     // Marcar R/E según selección
     if (formData.recepcionEntrega) {
+      this.doc.setFont('helvetica', 'bold'); // Cambiar a negrita para la X
       const isRecepcion = formData.recepcionEntrega === 'R';
       this.doc.text('X', isRecepcion ? 125.5 : 136.5, 60);
     }
 
     // Dibujar datos de producto si existen
     if (formData.descripcion) {
-      this.doc.setFontSize(7);
+      this.doc.setFontSize(8); // Tamaño específico para la descripción
+      this.doc.setFont('helvetica', 'italic');
       // Dividir la descripción en líneas si es necesario
       const lines = this.doc.splitTextToSize(formData.descripcion, 150);
       this.doc.text(lines, 42, 75);
     }
+
+    // Restaurar configuración original
+    this.doc.setTextColor(0, 0, 0); // Volver a color negro
+    this.doc.setFont('helvetica', 'normal'); // Volver a fuente normal
   }
 
   drawFooter(title) {
