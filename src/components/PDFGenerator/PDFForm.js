@@ -1,5 +1,18 @@
-// src/components/PDFGenerator/PDFForm.js
+// components/PDFGenerator/PDFForm.js
 const PDFForm = ({ formData, onChange, onGenerate }) => {
+  // Lista de aspectos a considerar para generar checkboxes dinámicamente
+  const aspectos = [
+    { name: 'excesosGrasas', label: 'Exceso de Grasas' },
+    { name: 'excesosOxidacion', label: 'Exceso de oxidación' },
+    { name: 'excesosCalamina', label: 'Exceso de calamina' },
+    { name: 'pintura', label: 'Pintura' },
+    { name: 'recubrimientoBuque', label: 'Pintura recubrimiento buque' },
+    { name: 'stickers', label: 'Con stickers' },
+    { name: 'soldaduraMalEscoriada', label: 'Soldadura mal escoriadas' },
+    { name: 'perforacionDe', label: 'Perforación de' },
+    { name: 'drenaje', label: 'Drenaje y/o para colgado' }
+  ];
+
   return (
     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
       {/* Sección de empresa y responsables */}
@@ -30,15 +43,27 @@ const PDFForm = ({ formData, onChange, onGenerate }) => {
         </div>
         <div>
           <label className="block text-gray-700 text-sm font-bold mb-2">
-            Responsable quien ordenó facturar
+            Facturar a nombre de
           </label>
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            name="responsableFacturar"
-            value={formData.responsableFacturar}
+            name="facturarA"
+            value={formData.facturarA}
             onChange={onChange}
           />
         </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Responsable quien ordenó facturar
+        </label>
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          name="responsableFacturar"
+          value={formData.responsableFacturar}
+          onChange={onChange}
+        />
       </div>
 
       {/* Sección de horas */}
@@ -104,17 +129,29 @@ const PDFForm = ({ formData, onChange, onGenerate }) => {
           Aspectos a considerar
         </label>
         <div className="grid grid-cols-2 gap-4">
-          <label className="flex items-center">
+          {aspectos.map((aspecto) => (
+            <label key={aspecto.name} className="flex items-center">
+              <input
+                type="checkbox"
+                name={aspecto.name}
+                checked={formData[aspecto.name]}
+                onChange={onChange}
+                className="mr-2"
+              />
+              {aspecto.label}
+            </label>
+          ))}
+          <div className="col-span-2">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Otros aspectos a considerar:
+            </label>
             <input
-              type="checkbox"
-              name="excesosGrasas"
-              checked={formData.excesosGrasas}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              name="otros"
+              value={formData.otros}
               onChange={onChange}
-              className="mr-2"
             />
-            Exceso de Grasas
-          </label>
-          {/* Agregar más checkboxes para cada aspecto */}
+          </div>
         </div>
       </div>
 
