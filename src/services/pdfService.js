@@ -7,6 +7,7 @@ export class PDFService {
     this.logoPath = '/images/LOGO INDUGAL(1).png';
   }
 
+  // Inicializar documento con fuente Courier para un aspecto menos perfecto
   initDocument() {
     this.doc = new jsPDF({
       orientation: 'landscape',
@@ -15,6 +16,8 @@ export class PDFService {
     });
     this.doc.setLineWidth(0.3);
     this.doc.setDrawColor(0);
+    // Establecer Courier como fuente principal
+    this.doc.setFont('courier');
   }
 
   async addLogo() {
@@ -391,23 +394,142 @@ export class PDFService {
     this.doc.line(290, 53, 290, 56); // Línea vertical
   }
 
-  async generatePDF(data = {}) {
-    this.initDocument();
-    await this.addLogo();
-    this.drawHeader();
-    this.drawChecklist();
-    this.drawClientInfo();
-    this.drawMainForm();
-    this.drawTimeSection();
-    this.drawProductTable();
-    this.drawDocumento();
-    this.drawFecha();
-    this.drawRectangulo();
-    this.drawDetails();
-    return this.doc;
+  // Nuevo método para dibujar el contenido del formulario
+  drawFormData(formData) {
+    if (!formData) return;
+
+    this.doc.setFontSize(8);
+    
+    // Dibujar datos de empresa y responsables
+    if (formData.empresa) {
+      this.doc.text(formData.empresa, 6, 25);
+    }
+
+    if (formData.responsableTrae) {
+      this.doc.text(formData.responsableTrae, 6, 35);
+    }
+
+    if (formData.facturarA) {
+      this.doc.text(formData.facturarA, 78, 25);
+    }
+
+    if (formData.responsableFacturar) {
+      this.doc.text(formData.responsableFacturar, 78, 35);
+    }
+
+    // Dibujar horas
+    if (formData.horaLlegada) {
+      this.doc.text(formData.horaLlegada, 119, 42);
+    }
+
+    if (formData.horaInicio) {
+      this.doc.text(formData.horaInicio, 119, 48);
+    }
+
+    if (formData.horaFinal) {
+      this.doc.text(formData.horaFinal, 119, 54);
+    }
+
+    // Marcar R/E según selección
+    if (formData.recepcionEntrega) {
+      const isRecepcion = formData.recepcionEntrega === 'R';
+      this.doc.text('X', isRecepcion ? 125.5 : 136.5, 60);
+    }
+
+    // Dibujar datos de producto si existen
+    if (formData.descripcion) {
+      this.doc.setFontSize(7);
+      // Dividir la descripción en líneas si es necesario
+      const lines = this.doc.splitTextToSize(formData.descripcion, 150);
+      this.doc.text(lines, 42, 75);
+    }
+  }
+
+  drawFooter(title) {
+    this.doc.setFont('courier', 'bold');
+    this.doc.setFontSize(12);
+    this.doc.text(title, 150, 120, { align: 'center' });
+  }
+
+  async generateMultipleCopies(formData) {
+    const copies = [];
+    const footerTitles = [
+      'ORIGINAL - CLIENTE',
+      'COPIA - CONTABILIDAD',
+      'COPIA - PRODUCCIÓN',
+      'COPIA - ARCHIVO'
+    ];
+
+    for (let i = 0; i < footerTitles.length; i++) {
+      // Inicializar nuevo documento para cada copia
+      this.initDocument();
+      
+      // Dibujar la estructura base
+      await this.addLogo();
+      this.drawHeader();
+      this.drawChecklist();
+      this.drawClientInfo();
+      this.drawMainForm();
+      this.drawTimeSection();
+      this.drawFecha();
+      this.drawProductTable();
+      this.drawDocumento();
+      this.drawRectangulo();
+      this.drawDetails();
+      
+      // Agregar los datos del formulario
+      this.drawFormData(formData);
+      
+      // Agregar el pie de página específico
+      this.drawFooter(footerTitles[i]);
+      
+      // Guardar la copia actual
+      copies.push(this.doc.output('blob'));
+    }
+
+    return copies;
   }
 
 
+  async generatePDF(formData = {}) {
+    try {
+      const copies = await this.generateMultipleCopies(formData);
+      
+      // Crear documento final que contendrá todas las copias
+      const finalDoc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // Agregar cada copia como una página nueva
+      for (let i = 0; i < copies.length; i++) {
+        if (i > 0) {
+          finalDoc.addPage();
+        }
+        const pageContent = await this.loadPDFBlob(copies[i]);
+        finalDoc.addPage(pageContent);
+      }
+
+      return finalDoc;
+
+    } catch (error) {
+      console.error('Error generando PDF:', error);
+      throw error;
+    }
+  }
+
+  // Método auxiliar para cargar un blob de PDF
+  async loadPDFBlob(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(blob);
+    });
+  }
+
+  // Método de guardado modificado
   savePDF(filename = 'recepcion-producto.pdf') {
     if (!this.doc) {
       throw new Error('Documento no inicializado');
