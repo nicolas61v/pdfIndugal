@@ -1,62 +1,100 @@
 // src/services/pdfService.js
 import { jsPDF } from 'jspdf';
 
+/**
+ * Servicio para la generación de PDFs de recepción de productos
+ * @class PDFService
+ */
 export class PDFService {
-  constructor() {
-    this.doc = null;
-    this.logoPath = '/images/LOGO INDUGAL(1).png';
-  }
+  /** @type {jsPDF} Instancia del documento PDF */
+  doc = null;
+  
+  /** @type {string} Ruta del logo de la empresa */
+  logoPath = '/images/LOGO INDUGAL(1).png';
+  
+  /** @type {Object} Configuración común del documento */
+  static DOC_CONFIG = {
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  };
 
-  // Inicializar documento con fuente Courier para un aspecto menos perfecto
+  /** @type {Object} Configuración de fuentes y colores */
+  static STYLES = {
+    fontSize: {
+      small: 6,
+      regular: 8,
+      medium: 9,
+      large: 10,
+      xlarge: 11
+    },
+    colors: {
+      red: [255, 0, 0],
+      black: [0, 0, 0],
+      gray: [128, 128, 128]
+    }
+  };
+
+  /**
+   * Inicializa un nuevo documento PDF
+   * @private
+   */
   initDocument() {
-    this.doc = new jsPDF({
-      orientation: 'landscape',
-      unit: 'mm',
-      format: 'a4'
-    });
+    this.doc = new jsPDF(PDFService.DOC_CONFIG);
     this.doc.setLineWidth(0.3);
     this.doc.setDrawColor(0);
-    // Establecer Courier como fuente principal
     this.doc.setFont('courier');
   }
 
+  /**
+   * Agrega el logo de la empresa al documento
+   * @private
+   * @async
+   */
   async addLogo() {
     try {
-      // Construir la URL completa usando el path base de la aplicación
       const logoUrl = `${window.location.origin}${this.logoPath}`;
-      
-      // Convertir la imagen a base64
       const imgData = await this.urlToBase64(logoUrl);
-      
-      // Obtener las propiedades de la imagen
       const imgProps = this.doc.getImageProperties(imgData);
-      const aspectRatio = imgProps.width / imgProps.height;
-  
-      // Dimensiones máximas del rectángulo
-      const maxWidth = 55;  // Aumentado 10mm (de 45 a 55)
-      const maxHeight = 30; // Aumentado 5mm (de 25 a 30)
-  
-      // Calcular dimensiones finales manteniendo proporción
-      let width = maxWidth;
-      let height = width / aspectRatio;
-  
-      if (height > maxHeight) {
-        height = maxHeight;
-        width = height * aspectRatio;
-      }
-  
-      // Nueva posición del logo: 5mm a la izquierda y 5mm arriba
-      const x = 5;
-      const y = 5;
-  
-      // Agregar solo la imagen, sin el rectángulo
-      this.doc.addImage(imgData, 'PNG', x, y, width, height);
+      
+      const dimensions = this.calculateImageDimensions(imgProps, {
+        maxWidth: 55,
+        maxHeight: 30
+      });
+
+      this.doc.addImage(imgData, 'PNG', 5, 5, dimensions.width, dimensions.height);
     } catch (error) {
       console.error('Error al cargar el logo:', error);
-      // En caso de error, no hacemos nada ya que eliminamos el rectángulo
     }
   }
 
+  /**
+   * Calcula las dimensiones óptimas de una imagen manteniendo su proporción
+   * @private
+   * @param {Object} imgProps - Propiedades de la imagen
+   * @param {Object} maxDimensions - Dimensiones máximas permitidas
+   * @returns {Object} Dimensiones calculadas
+   */
+  calculateImageDimensions(imgProps, maxDimensions) {
+    const aspectRatio = imgProps.width / imgProps.height;
+    let width = maxDimensions.maxWidth;
+    let height = width / aspectRatio;
+
+    if (height > maxDimensions.maxHeight) {
+      height = maxDimensions.maxHeight;
+      width = height * aspectRatio;
+    }
+
+    return { width, height };
+  }
+
+  /**
+   * Convierte una URL a base64
+   * @private
+   * @async
+   * @param {string} url - URL de la imagen
+   * @returns {Promise<string>} Imagen en formato base64
+   */
   async urlToBase64(url) {
     try {
       const response = await fetch(url);
@@ -70,6 +108,18 @@ export class PDFService {
     } catch (error) {
       throw new Error('Error al convertir URL a base64');
     }
+  }
+
+  /**
+   * Dibuja una flecha hacia abajo
+   * @private
+   * @param {number} x - Posición X
+   * @param {number} y - Posición Y
+   */
+  drawDownArrow(x, y) {
+    this.doc.setFillColor(...PDFService.STYLES.colors.gray);
+    this.doc.triangle(x, y, x - 1, y - 1, x + 1, y - 1);
+    this.doc.setFillColor(...PDFService.STYLES.colors.black);
   }
 
   drawHeader() {
@@ -451,6 +501,12 @@ export class PDFService {
     this.doc.text(title, 150, 120, { align: 'center' });
   }
 
+  /**
+   * Genera múltiples copias del documento
+   * @async
+   * @param {Object} formData - Datos del formulario
+   * @returns {Promise<Blob[]>} Array de blobs de PDF
+   */
   async generateMultipleCopies(formData) {
     const copies = [];
     const footerTitles = [
@@ -460,76 +516,89 @@ export class PDFService {
       'COPIA - ARCHIVO'
     ];
 
-    for (let i = 0; i < footerTitles.length; i++) {
-      // Inicializar nuevo documento para cada copia
+    for (const title of footerTitles) {
       this.initDocument();
-      
-      // Dibujar la estructura base
-      await this.addLogo();
-      this.drawHeader();
-      this.drawChecklist();
-      this.drawClientInfo();
-      this.drawMainForm();
-      this.drawTimeSection();
-      this.drawFecha();
-      this.drawProductTable();
-      this.drawDocumento();
-      this.drawRectangulo();
-      this.drawDetails();
-      
-      // Agregar los datos del formulario
-      this.drawFormData(formData);
-      
-      // Agregar el pie de página específico
-      this.drawFooter(footerTitles[i]);
-      
-      // Guardar la copia actual
+      await this.drawCompletePage(formData, title);
       copies.push(this.doc.output('blob'));
     }
 
     return copies;
   }
 
+  /**
+   * Dibuja una página completa del documento
+   * @private
+   * @async
+   * @param {Object} formData - Datos del formulario
+   * @param {string} footerTitle - Título del pie de página
+   */
+  async drawCompletePage(formData, footerTitle) {
+    await this.addLogo();
+    this.drawHeader();
+    this.drawChecklist();
+    this.drawClientInfo();
+    this.drawMainForm();
+    this.drawTimeSection();
+    this.drawFecha();
+    this.drawProductTable();
+    this.drawDocumento();
+    this.drawRectangulo();
+    this.drawDetails();
+    this.drawFormData(formData);
+    this.drawFooter(footerTitle);
+  }
 
+  /**
+   * Genera el PDF final con todas las copias
+   * @async
+   * @param {Object} formData - Datos del formulario
+   * @returns {Promise<jsPDF>} Documento PDF final
+   */
+  /**
+   * Convierte un Blob de PDF a ArrayBuffer
+   * @private
+   * @async
+   * @param {Blob} blob - Blob del PDF
+   * @returns {Promise<ArrayBuffer>} Contenido del PDF como ArrayBuffer
+   */
+  async loadPDFBlob(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(blob);
+    });
+  }
+
+  /**
+   * Genera el PDF final con todas las copias
+   * @async
+   * @param {Object} formData - Datos del formulario
+   * @returns {Promise<jsPDF>} Documento PDF final
+   */
   async generatePDF(formData = {}) {
     try {
       const copies = await this.generateMultipleCopies(formData);
-      
-      // Crear documento final que contendrá todas las copias
-      const finalDoc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4'
-      });
+      const finalDoc = new jsPDF(PDFService.DOC_CONFIG);
 
-      // Agregar cada copia como una página nueva
       for (let i = 0; i < copies.length; i++) {
-        if (i > 0) {
-          finalDoc.addPage();
-        }
+        if (i > 0) finalDoc.addPage();
         const pageContent = await this.loadPDFBlob(copies[i]);
         finalDoc.addPage(pageContent);
       }
 
       return finalDoc;
-
     } catch (error) {
       console.error('Error generando PDF:', error);
       throw error;
     }
   }
 
-  // Método auxiliar para cargar un blob de PDF
-  async loadPDFBlob(blob) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(blob);
-    });
-  }
-
-  // Método de guardado modificado
+  /**
+   * Guarda el PDF con el nombre especificado
+   * @param {string} filename - Nombre del archivo
+   * @throws {Error} Si el documento no está inicializado
+   */
   savePDF(filename = 'recepcion-producto.pdf') {
     if (!this.doc) {
       throw new Error('Documento no inicializado');
