@@ -1,3 +1,6 @@
+//src/components/PDFGenerator/PDFForm.js
+'use client';
+
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 
@@ -15,19 +18,19 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
   ];
 
   const inputBaseClass = "w-full bg-slate-800 border-slate-600 text-slate-100 rounded-md shadow-sm " +
-                        "focus:border-blue-500 focus:ring focus:ring-blue-500/20 " +
-                        "placeholder-slate-400 p-3 text-lg";
+    "focus:border-blue-500 focus:ring focus:ring-blue-500/20 " +
+    "placeholder-slate-400 p-3 text-lg";
 
   return (
-    <form className="space-y-8 bg-slate-900 text-slate-100 p-8 rounded-lg shadow-xl max-w-7xl mx-auto" 
-          onSubmit={(e) => { e.preventDefault(); onGenerate(); }}>
-      
+    <form className="space-y-8 bg-slate-900 text-slate-100 p-8 rounded-lg shadow-xl max-w-7xl mx-auto"
+      onSubmit={(e) => { e.preventDefault(); onGenerate(); }}>
+
       {/* Sección de empresa y responsables */}
       <div className="space-y-8">
         <h3 className="text-2xl font-bold text-blue-400 border-b border-slate-700 pb-3">
           Información de la Empresa
         </h3>
-        
+
         <div className="grid gap-8">
           <div className="grid grid-cols-1 gap-6">
             <div>
@@ -88,7 +91,7 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
         <h3 className="text-2xl font-bold text-blue-400 border-b border-slate-700 pb-3">
           Información de Tiempos
         </h3>
-        
+
         <div className="grid grid-cols-3 gap-6">
           <div>
             <label className="block text-lg font-medium text-slate-300 mb-2">
@@ -195,11 +198,11 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
         <h3 className="text-2xl font-bold text-blue-400 border-b border-slate-700 pb-3">
           Aspectos a Considerar
         </h3>
-        
+
         <div className="grid grid-cols-2 gap-4">
           {aspectos.map((aspecto) => (
-            <label key={aspecto.name} 
-                   className="flex items-center space-x-4 p-4 rounded-lg bg-slate-800/50 
+            <label key={aspecto.name}
+              className="flex items-center space-x-4 p-4 rounded-lg bg-slate-800/50 
                             hover:bg-slate-700/50 transition-colors cursor-pointer">
               <input
                 type="checkbox"
