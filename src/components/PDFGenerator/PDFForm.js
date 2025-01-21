@@ -106,6 +106,50 @@ const PDFForm = ({ formData, onChange, onGenerate }) => {
         </div>
       </div>
 
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        {/* Fecha y hora superior */}
+        <div>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Fecha de llegada
+          </label>
+          <input
+            type="date"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            name="fechaSuperior"
+            value={formData.fechaSuperior || ''}
+            onChange={onChange}
+          />
+          <input
+            type="time"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
+            name="horaSuperior"
+            value={formData.horaSuperior || ''}
+            onChange={onChange}
+          />
+        </div>
+
+        {/* Fecha y hora inferior (compromiso de entrega) */}
+        <div>
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Fecha compromiso de entrega
+          </label>
+          <input
+            type="date"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            name="fechaInferior"
+            value={formData.fechaInferior || ''}
+            onChange={onChange}
+          />
+          <input
+            type="time"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
+            name="horaInferior"
+            value={formData.horaInferior || ''}
+            onChange={onChange}
+          />
+        </div>
+      </div>
+
       {/* Sección de recepción/entrega */}
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2">

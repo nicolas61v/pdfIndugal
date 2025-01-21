@@ -1,10 +1,9 @@
 // src/services/pdfService.js
 import { jsPDF } from 'jspdf';
+// Importar las fuentes (ajusta las rutas según tu estructura)
+import ComicSansNormal from'../fonts/ComicSansMS.ttf';
+import ComicSansBold from '../fonts/ComicNeue-Bold.ttf';
 
-/**
- * Servicio para la generación de PDFs de recepción de productos
- * @class PDFService
- */
 export class PDFService {
   /** @type {jsPDF} Instancia del documento PDF */
   doc = null;
@@ -35,6 +34,26 @@ export class PDFService {
     }
   };
 
+  constructor() {
+    // Inicializar las fuentes al crear la instancia
+    this.normalFont = null;
+    this.boldFont = null;
+    this.loadFonts();
+  }
+
+  async loadFonts() {
+    try {
+      // Cargar los archivos de fuente
+      const normalFontResponse = await fetch(ComicSansNormal);
+      const boldFontResponse = await fetch(ComicSansBold);
+
+      this.normalFont = await normalFontResponse.arrayBuffer();
+      this.boldFont = await boldFontResponse.arrayBuffer();
+    } catch (error) {
+      console.error('Error cargando las fuentes:', error);
+    }
+  }
+
   /**
    * Inicializa un nuevo documento PDF
    * @private
@@ -43,7 +62,19 @@ export class PDFService {
     this.doc = new jsPDF(PDFService.DOC_CONFIG);
     this.doc.setLineWidth(0.3);
     this.doc.setDrawColor(0);
-    this.doc.setFont('courier');
+    
+    // Usar una fuente estándar disponible en jsPDF
+    this.doc.setFont('helvetica', 'normal');
+  }
+  
+  /**
+   * Configura el estilo del texto para los datos del formulario
+   * @private
+   */
+  setFormTextStyle() {
+    this.doc.setFont('Times', 'Italic');
+    this.doc.setFontSize(12);
+    this.doc.setTextColor(0, 0, 255); // Color azul RGB
   }
 
   /**
@@ -444,64 +475,149 @@ export class PDFService {
     this.doc.line(290, 53, 290, 56); // Línea vertical
   }
 
-  // Nuevo método para dibujar el contenido del formulario
   drawFormData(formData) {
     if (!formData) return;
-
-    // Configurar estilo para datos del formulario
-    this.doc.setFontSize(9); // Ligeramente más grande
-    this.doc.setFont('helvetica', 'italic'); // Fuente en cursiva
-    this.doc.setTextColor(0, 51, 153); // Color azul (RGB)
-    
+  
+    // Configurar estilo del texto
+    this.setFormTextStyle();
+  
     // Dibujar datos de empresa y responsables
     if (formData.empresa) {
       this.doc.text(formData.empresa, 6, 25);
     }
-
+  
     if (formData.responsableTrae) {
       this.doc.text(formData.responsableTrae, 6, 35);
     }
-
+  
     if (formData.facturarA) {
       this.doc.text(formData.facturarA, 78, 25);
     }
-
+  
     if (formData.responsableFacturar) {
       this.doc.text(formData.responsableFacturar, 78, 35);
     }
-
-    // Dibujar horas
+  
+    // Dibujar horas con posiciones precisas
     if (formData.horaLlegada) {
       this.doc.text(formData.horaLlegada, 119, 42);
     }
-
+  
     if (formData.horaInicio) {
       this.doc.text(formData.horaInicio, 119, 48);
     }
-
+  
     if (formData.horaFinal) {
       this.doc.text(formData.horaFinal, 119, 54);
     }
-
+  
+    // Configuración para los checkboxes
+    const aspectosPosition = {
+      x: 234,
+      xNo: 239,
+      yStart: 9,
+      yIncrement: 3
+    };
+  
+    // Marcar checkboxes
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'bold');
+  
+    const aspectos = [
+      'excesosGrasas', 'excesosOxidacion', 'excesosCalamina', 
+      'pintura', 'recubrimientoBuque', 'stickers', 
+      'soldaduraMalEscoriada', 'perforacionDe', 'drenaje'
+    ];
+  
+    aspectos.forEach((aspecto, index) => {
+      const y = aspectosPosition.yStart + (index * aspectosPosition.yIncrement);
+      
+      if (formData[aspecto]) {
+        // Si está marcado, poner X en SI
+        this.doc.text('X', aspectosPosition.x + 0.5, y);
+      } else {
+        // Si no está marcado, poner X en NO
+        this.doc.text('X', aspectosPosition.xNo + 0.5, y);
+      }
+    });
+  
     // Marcar R/E según selección
     if (formData.recepcionEntrega) {
-      this.doc.setFont('helvetica', 'bold'); // Cambiar a negrita para la X
       const isRecepcion = formData.recepcionEntrega === 'R';
       this.doc.text('X', isRecepcion ? 125.5 : 136.5, 60);
     }
-
-    // Dibujar datos de producto si existen
+  
+    // Información del producto
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.setFontSize(11);
+    if (formData.linea) {
+      this.doc.text(formData.linea, 6, 73);
+    }
+  
+    if (formData.procesoRef) {
+      this.doc.text(formData.procesoRef, 18, 73);
+    }
+  
+    if (formData.codigoRef) {
+      this.doc.text(formData.codigoRef, 41, 73);
+    }
+  
+    // Descripción del producto con manejo de texto largo
     if (formData.descripcion) {
-      this.doc.setFontSize(8); // Tamaño específico para la descripción
-      this.doc.setFont('helvetica', 'italic');
-      // Dividir la descripción en líneas si es necesario
-      const lines = this.doc.splitTextToSize(formData.descripcion, 150);
-      this.doc.text(lines, 42, 75);
+      const maxWidth = 140;
+      const lines = this.doc.splitTextToSize(formData.descripcion, maxWidth);
+      this.doc.text(lines, 61, 73);
+    }
+  
+    // Otros aspectos a considerar
+    if (formData.otros) {
+      this.doc.text(formData.otros, 230, 36);
     }
 
+      // Agregar manejo de fechas y horas
+  this.doc.setFont('helvetica', 'normal');
+  this.doc.setFontSize(11);
+  this.doc.setTextColor(0, 0, 255);
+
+  // Fecha y hora superior
+  if (formData.fechaSuperior) {
+    const fecha = new Date(formData.fechaSuperior);
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const año = fecha.getFullYear();
+    
+    // Posicionar día, mes y año en sus respectivas columnas
+    this.doc.text(dia, 162, 24);
+    this.doc.text(mes, 173, 24);
+    this.doc.text(año.toString(), 184, 24);
+  }
+
+  if (formData.horaSuperior) {
+    this.doc.text(formData.horaSuperior, 162, 30);
+  }
+
+  // Fecha y hora inferior (compromiso de entrega)
+  if (formData.fechaInferior) {
+    const fecha = new Date(formData.fechaInferior);
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const año = fecha.getFullYear();
+    
+    // Posicionar día, mes y año en sus respectivas columnas
+    this.doc.text(dia, 162, 46);
+    this.doc.text(mes, 173, 46);
+    this.doc.text(año.toString(), 184, 46);
+  }
+
+  if (formData.horaInferior) {
+    this.doc.text(formData.horaInferior, 162, 51);
+  }
+
+  
     // Restaurar configuración original
-    this.doc.setTextColor(0, 0, 0); // Volver a color negro
-    this.doc.setFont('helvetica', 'normal'); // Volver a fuente normal
+    this.doc.setTextColor(0);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.setFontSize(8);
   }
 
   drawFooter(title) {
