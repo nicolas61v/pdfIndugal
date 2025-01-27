@@ -9,10 +9,10 @@ export class PDFService {
   logoPath = '/images/LOGO INDUGAL(1).png';
 
   /** @type {string} Ruta del círculo rojo largo */
-  largoRojoPath = '/images/largoRojo.png';
+  largoRojoPath = '/images/cortoRojochico.png';
 
   /** @type {string} Ruta del círculo rojo corto */
-  cortoRojoPath = '/images/cortoRojo.png';
+  cortoRojoPath = '/images/largoRojochico.png';
   
   /** @type {Object} Configuración común del documento */
   static DOC_CONFIG = {
@@ -99,7 +99,7 @@ export class PDFService {
       const imgData = await this.urlToBase64(imgUrl);
       
       // Ajustamos las dimensiones para cubrir la fecha inferior y el texto de compromiso
-      this.doc.addImage(imgData, 'PNG', 195, 38, 50, 18);
+      this.doc.addImage(imgData, 'PNG', 150, 38, 100, 18);
     } catch (error) {
       console.error('Error al cargar el círculo rojo largo:', error);
     }
@@ -116,7 +116,7 @@ export class PDFService {
       const imgData = await this.urlToBase64(imgUrl);
       
       // Ajustamos las dimensiones para cubrir los rectángulos de hora
-      this.doc.addImage(imgData, 'PNG', 118, 38, 28, 20);
+      this.doc.addImage(imgData, 'PNG', 70, 36, 80, 29);
     } catch (error) {
       console.error('Error al cargar el círculo rojo corto:', error);
     }
@@ -714,8 +714,8 @@ export class PDFService {
     this.drawDocumento();
     this.drawRectangulo();
     this.drawDetails();
-    await this.addLargoRojo(); // Agregar círculo rojo largo
-    await this.addCortoRojo(); // Agregar círculo rojo corto
+    this.addLargoRojo(); // Agregar círculo rojo largo
+    this.addCortoRojo(); // Agregar círculo rojo corto
     this.drawFormData(formData);
     this.drawFooter(footerTitle);
   }
