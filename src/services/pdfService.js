@@ -1,8 +1,5 @@
 // src/services/pdfService.js
 import { jsPDF } from 'jspdf';
-// Importar las fuentes (ajusta las rutas según tu estructura)
-import ComicSansNormal from'../fonts/ComicSansMS.ttf';
-import ComicSansBold from '../fonts/ComicNeue-Bold.ttf';
 
 export class PDFService {
   /** @type {jsPDF} Instancia del documento PDF */
@@ -38,20 +35,6 @@ export class PDFService {
     // Inicializar las fuentes al crear la instancia
     this.normalFont = null;
     this.boldFont = null;
-    this.loadFonts();
-  }
-
-  async loadFonts() {
-    try {
-      // Cargar los archivos de fuente
-      const normalFontResponse = await fetch(ComicSansNormal);
-      const boldFontResponse = await fetch(ComicSansBold);
-
-      this.normalFont = await normalFontResponse.arrayBuffer();
-      this.boldFont = await boldFontResponse.arrayBuffer();
-    } catch (error) {
-      console.error('Error cargando las fuentes:', error);
-    }
   }
 
   /**

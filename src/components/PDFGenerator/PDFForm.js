@@ -13,8 +13,7 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
     { name: 'recubrimientoBuque', label: 'Pintura recubrimiento buque' },
     { name: 'stickers', label: 'Con stickers' },
     { name: 'soldaduraMalEscoriada', label: 'Soldadura mal escoriadas' },
-    { name: 'perforacionDe', label: 'Perforación de' },
-    { name: 'drenaje', label: 'Drenaje y/o para colgado' }
+    { name: 'drenaje', label: 'Perforacion de Drenaje y/o para colgado' }
   ];
 
   const inputBaseClass = "w-full bg-slate-800 border-slate-600 text-slate-100 rounded-md shadow-sm " +
