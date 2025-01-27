@@ -4,7 +4,7 @@ import { jsPDF } from 'jspdf';
 export class PDFService {
   /** @type {jsPDF} Instancia del documento PDF */
   doc = null;
-  
+
   /** @type {string} Ruta del logo de la empresa */
   logoPath = '/images/LOGO INDUGAL(1).png';
 
@@ -13,7 +13,7 @@ export class PDFService {
 
   /** @type {string} Ruta del círculo rojo corto */
   cortoRojoPath = '/images/largoRojochico.png';
-  
+
   /** @type {Object} Configuración común del documento */
   static DOC_CONFIG = {
     orientation: 'landscape',
@@ -51,11 +51,11 @@ export class PDFService {
     this.doc = new jsPDF(PDFService.DOC_CONFIG);
     this.doc.setLineWidth(0.3);
     this.doc.setDrawColor(0);
-    
+
     // Usar una fuente estándar disponible en jsPDF
     this.doc.setFont('helvetica', 'normal');
   }
-  
+
   /**
    * Configura el estilo del texto para los datos del formulario
    * @private
@@ -76,7 +76,7 @@ export class PDFService {
       const logoUrl = `${window.location.origin}${this.logoPath}`;
       const imgData = await this.urlToBase64(logoUrl);
       const imgProps = this.doc.getImageProperties(imgData);
-      
+
       const dimensions = this.calculateImageDimensions(imgProps, {
         maxWidth: 55,
         maxHeight: 30
@@ -97,9 +97,9 @@ export class PDFService {
     try {
       const imgUrl = `${window.location.origin}${this.largoRojoPath}`;
       const imgData = await this.urlToBase64(imgUrl);
-      
+
       // Ajustamos las dimensiones para cubrir la fecha inferior y el texto de compromiso
-      this.doc.addImage(imgData, 'PNG', 150, 38, 100, 18);
+      this.doc.addImage(imgData, 'PNG', 150, 38, 102, 18);
     } catch (error) {
       console.error('Error al cargar el círculo rojo largo:', error);
     }
@@ -114,7 +114,7 @@ export class PDFService {
     try {
       const imgUrl = `${window.location.origin}${this.cortoRojoPath}`;
       const imgData = await this.urlToBase64(imgUrl);
-      
+
       // Ajustamos las dimensiones para cubrir los rectángulos de hora
       this.doc.addImage(imgData, 'PNG', 70, 36, 80, 29);
     } catch (error) {
@@ -237,7 +237,7 @@ export class PDFService {
     // Título del checklist
     this.doc.setFontSize(8);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text('Aspectos a considerar Si Aplica:', 195, 5); // +5mm
+    this.doc.text('Aspectos a considerar Si Aplica:', 195, 5);
 
     const aspectos = [
       'Exceso de Grasas',
@@ -252,30 +252,36 @@ export class PDFService {
       'Otros y que tiene a considerar:'
     ];
 
+    // Lista de aspectos que no deben tener cuadros
+    const aspectosSinCuadros = ['Perforación de', 'Otros y que tiene a considerar:'];
+
     let y = 9;
     aspectos.forEach((aspecto) => {
-      this.doc.text(aspecto, 195, y); // +5mm del original
+      this.doc.text(aspecto, 195, y);
 
-      // Establece el color rojo para los bordes de los checkboxes
-      this.doc.setDrawColor(255, 0, 0); // Color de borde rojo
-      
-      // Dibuja los rectángulos solo con borde rojo (+5mm)
-      this.doc.rect(234, y - 2, 4, 3); // SI (229 + 5)
-      this.doc.rect(239, y - 2, 4, 3); // NO (234 + 5)
+      // Solo dibuja los cuadros si el aspecto no está en la lista de excepciones
+      if (!aspectosSinCuadros.includes(aspecto)) {
+        // Establece el color rojo para los bordes de los checkboxes
+        this.doc.setDrawColor(255, 0, 0);
 
-      // Configura el texto en negro y más pequeño (+10mm)
-      this.doc.setFontSize(7);
-      this.doc.setTextColor(0); // Texto en negro
-      this.doc.text('SI', 235, y)
-      this.doc.text('NO', 239, y); 
+        // Dibuja los rectángulos solo con borde rojo
+        this.doc.rect(234, y - 2, 4, 3); // SI
+        this.doc.rect(239, y - 2, 4, 3); // NO
 
-      // Restaura el color de borde a negro para el resto del documento
-      this.doc.setDrawColor(0);
+        // Configura el texto en negro y más pequeño
+        this.doc.setFontSize(7);
+        this.doc.setTextColor(0);
+        this.doc.text('SI', 235, y);
+        this.doc.text('NO', 239, y);
+
+        // Restaura el color de borde a negro
+        this.doc.setDrawColor(0);
+      }
 
       y += 3;
     });
-}
-  
+  }
+
 
   drawClientInfo() {
     //Requisitos del cliente
@@ -298,33 +304,33 @@ export class PDFService {
 
   drawMainForm() {
     this.doc.setFontSize(6);
-    
+
     // Función helper para dibujar triángulo
     const drawDownArrow = (x, y) => {
-        this.doc.setFillColor(128, 128, 128); // Color gris
-        this.doc.triangle(
-            x, y,           // Punto superior
-            x - 1, y - 1,   // Punto inferior izquierdo
-            x + 1, y - 1    // Punto inferior derecho
-        );
-        this.doc.setFillColor(0, 0, 0); // Restablecer color a negro
+      this.doc.setFillColor(128, 128, 128); // Color gris
+      this.doc.triangle(
+        x, y,           // Punto superior
+        x - 1, y - 1,   // Punto inferior izquierdo
+        x + 1, y - 1    // Punto inferior derecho
+      );
+      this.doc.setFillColor(0, 0, 0); // Restablecer color a negro
     };
-    
+
     // Empresa
     this.doc.text('EMPRESA QUIEN TRAE EL PRODUCTO SI APLICA', 10, 21);
     this.doc.line(5, 27, 70, 27);
     drawDownArrow(34, 23); // Triángulo para empresa
-    
+
     // Responsable
     this.doc.text('NOMBRE RESPONSABLE QUIEN TRAE EL PRODUCTO', 8, 31);
     this.doc.line(5, 37, 70, 37);
     drawDownArrow(34, 33); // Triángulo para responsable
-    
+
     // Facturar
     this.doc.text('FACTURAR A NOMBRE DE', 100, 21);
     this.doc.line(77, 27, 150, 27);
     drawDownArrow(114, 23); // Triángulo para facturar
-    
+
     // Responsable facturación
     this.doc.text('RESPONSABLE QUIEN ORDENÓ FACTURAR', 91, 31);
     this.doc.line(77, 37, 150, 37);
@@ -332,13 +338,13 @@ export class PDFService {
 
     // Sección de tiempo de entrega
     this.doc.text('TIEMPO PARA LA ENTREGA DEL PRODUCTO SUGERIDO POR', 5, 41);
-    
+
     this.doc.text('CLIENTE', 5, 45);
     this.doc.rect(15, 43, 3, 3); // Línea para checkbox cliente
-    
+
     this.doc.text('INDUSTRIAS Y GALVANIZADOS', 27, 45);
     this.doc.rect(60, 43, 3, 3); // Línea para checkbox industrias
-    
+
     this.doc.setFont('helvetica', 'bold');
     this.doc.text('NOMBRE:', 6, 52);
     this.doc.line(20, 52, 65, 52);
@@ -346,19 +352,19 @@ export class PDFService {
 
   drawTimeSection() {
     this.doc.setFontSize(6);
-    
+
     // Campos de hora con líneas
     this.doc.text('HORA REPORTE LLEGADA', 77, 42);
     this.doc.rect(118, 39, 28, 5);
-    
+
     this.doc.text('HORA INICIO DESPACHO', 77, 48);
     this.doc.rect(118, 45, 28, 5);
-    
+
     this.doc.text('HORA FINAL DESPACHO Y SALIDA', 77, 54);
     this.doc.rect(118, 51, 28, 5);
-    
+
     // R/E con líneas pequeñas
-    this.doc.text('RECEPCIÓN ENTREGA', 77,60);
+    this.doc.text('RECEPCIÓN ENTREGA', 77, 60);
     this.doc.rect(118, 57, 28, 5);
     this.doc.setFont('helvetica', 'bold');
     this.doc.setFontSize(10);
@@ -386,7 +392,7 @@ export class PDFService {
     this.doc.line(171, 18, 171, 27);
     this.doc.line(182, 18, 182, 27);
     // Separador hora
-    this.doc.line(160, 27, 193, 27);    
+    this.doc.line(160, 27, 193, 27);
 
     // Fecha inferior (10mm más abajo)
     this.doc.text('FECHA :', 150, 45); // 5mm a la izquierda
@@ -406,7 +412,7 @@ export class PDFService {
     this.doc.line(160, 49.5, 189.7, 49.5); // 5mm a la izquierda
 
     //texto de compromiso
-    this.doc.line(195,40,245,40);
+    this.doc.line(195, 40, 245, 40);
     this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'bold');
     this.doc.text('compromiso    de    entrega', 200, 45);
@@ -421,8 +427,8 @@ export class PDFService {
     this.doc.line(192, 46, 195, 48); // Línea diagonal hacia abajo
   }
 
-  drawDocumento(){
-    this.doc.rect(250,38,40,14);
+  drawDocumento() {
+    this.doc.rect(250, 38, 40, 14);
     this.doc.text('DOCUMENTO', 261, 41);
   }
 
@@ -448,7 +454,7 @@ export class PDFService {
 
     // Dibujar líneas verticales
     this.doc.setDrawColor(0, 0, 0)
-  
+
 
     // Columnas
     //linea horizontal superior
@@ -464,12 +470,12 @@ export class PDFService {
     this.doc.line(60, 65, 60, 115); // Línea vertical
   }
 
-  drawRectangulo(){
+  drawRectangulo() {
     this.doc.setLineWidth(0.3);
     this.doc.rect(5, 69, 285, 46);
     this.doc.line(5, 65, 190, 65); // Línea horizontal
     this.doc.line(5, 65, 5, 69); // Línea vertical
-    
+
   }
 
   drawDetails() {
@@ -522,143 +528,152 @@ export class PDFService {
 
   drawFormData(formData) {
     if (!formData) return;
-  
+
     // Configurar estilo del texto
     this.setFormTextStyle();
-  
+
     // Dibujar datos de empresa y responsables
     if (formData.empresa) {
       this.doc.text(formData.empresa, 6, 25);
     }
-  
+
     if (formData.responsableTrae) {
       this.doc.text(formData.responsableTrae, 6, 35);
     }
-  
+
     if (formData.facturarA) {
       this.doc.text(formData.facturarA, 78, 25);
     }
-  
+
     if (formData.responsableFacturar) {
       this.doc.text(formData.responsableFacturar, 78, 35);
     }
-  
+
     // Dibujar horas con posiciones precisas
     if (formData.horaLlegada) {
       this.doc.text(formData.horaLlegada, 119, 42);
     }
-  
+
     if (formData.horaInicio) {
       this.doc.text(formData.horaInicio, 119, 48);
     }
-  
+
     if (formData.horaFinal) {
       this.doc.text(formData.horaFinal, 119, 54);
     }
-  
-    // Configuración para los checkboxes
-    const aspectosPosition = {
-      x: 234,
-      xNo: 239,
-      yStart: 9,
-      yIncrement: 3
-    };
-  
-    // Marcar checkboxes
-    this.doc.setFontSize(10);
-    this.doc.setFont('helvetica', 'bold');
-  
-    const aspectos = [
-      'excesosGrasas', 'excesosOxidacion', 'excesosCalamina', 
-      'pintura', 'recubrimientoBuque', 'stickers', 
-      'soldaduraMalEscoriada', 'perforacionDe', 'drenaje'
-    ];
-  
-    aspectos.forEach((aspecto, index) => {
-      const y = aspectosPosition.yStart + (index * aspectosPosition.yIncrement);
-      
-      if (formData[aspecto]) {
-        // Si está marcado, poner X en SI
-        this.doc.text('X', aspectosPosition.x + 0.5, y);
-      } else {
-        // Si no está marcado, poner X en NO
-        this.doc.text('X', aspectosPosition.xNo + 0.5, y);
-      }
-    });
-  
+
+   // Configuración para los checkboxes
+const aspectosPosition = {
+  x: 234,
+  xNo: 239,
+  yStart: 10,
+  yIncrement: 3
+};
+
+// Marcar checkboxes
+this.doc.setFontSize(10);
+this.doc.setFont('helvetica', 'bold');
+
+// Lista de aspectos que pueden tener X
+const aspectos = [
+  'excesosGrasas', 
+  'excesosOxidacion', 
+  'excesosCalamina', 
+  'pintura', 
+  'recubrimientoBuque', 
+  'stickers', 
+  'soldaduraMalEscoriada',
+  null,  // Espacio para 'perforacionDe' que no lleva X
+  'drenaje'  // Ahora está una posición más abajo
+];
+
+aspectos.forEach((aspecto, index) => {
+  // Solo procesar si el aspecto no es null
+  if (aspecto) {
+    const y = aspectosPosition.yStart + (index * aspectosPosition.yIncrement);
+    
+    if (formData[aspecto]) {
+      // Si está marcado, poner X en SI
+      this.doc.text('X', aspectosPosition.x + 0.5, y);
+    } else {
+      // Si no está marcado, poner X en NO
+      this.doc.text('X', aspectosPosition.xNo + 0.5, y);
+    }
+  }
+});
     // Marcar R/E según selección
     if (formData.recepcionEntrega) {
       const isRecepcion = formData.recepcionEntrega === 'R';
       this.doc.text('X', isRecepcion ? 125.5 : 136.5, 60);
     }
-  
+
     // Información del producto
     this.doc.setFont('helvetica', 'normal');
     this.doc.setFontSize(11);
     if (formData.linea) {
       this.doc.text(formData.linea, 6, 73);
     }
-  
+
     if (formData.procesoRef) {
       this.doc.text(formData.procesoRef, 18, 73);
     }
-  
+
     if (formData.codigoRef) {
       this.doc.text(formData.codigoRef, 41, 73);
     }
-  
+
     // Descripción del producto con manejo de texto largo
     if (formData.descripcion) {
       const maxWidth = 140;
       const lines = this.doc.splitTextToSize(formData.descripcion, maxWidth);
       this.doc.text(lines, 61, 73);
     }
-  
+
     // Otros aspectos a considerar
     if (formData.otros) {
       this.doc.text(formData.otros, 230, 36);
     }
 
-      // Agregar manejo de fechas y horas
-  this.doc.setFont('helvetica', 'normal');
-  this.doc.setFontSize(11);
-  this.doc.setTextColor(0, 0, 255);
+    // Agregar manejo de fechas y horas
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.setFontSize(11);
+    this.doc.setTextColor(0, 0, 255);
 
-  // Fecha y hora superior
-  if (formData.fechaSuperior) {
-    const fecha = new Date(formData.fechaSuperior);
-    const dia = fecha.getDate().toString().padStart(2, '0');
-    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-    const año = fecha.getFullYear();
-    
-    // Posicionar día, mes y año en sus respectivas columnas
-    this.doc.text(dia, 162, 24);
-    this.doc.text(mes, 173, 24);
-    this.doc.text(año.toString(), 184, 24);
-  }
+    // Fecha y hora superior
+    if (formData.fechaSuperior) {
+      const fecha = new Date(formData.fechaSuperior);
+      const dia = fecha.getDate().toString().padStart(2, '0');
+      const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+      const año = fecha.getFullYear();
 
-  if (formData.horaSuperior) {
-    this.doc.text(formData.horaSuperior, 162, 30);
-  }
+      // Posicionar día, mes y año en sus respectivas columnas
+      this.doc.text(dia, 162, 24);
+      this.doc.text(mes, 173, 24);
+      this.doc.text(año.toString(), 184, 24);
+    }
 
-  // Fecha y hora inferior (compromiso de entrega)
-  if (formData.fechaInferior) {
-    const fecha = new Date(formData.fechaInferior);
-    const dia = fecha.getDate().toString().padStart(2, '0');
-    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-    const año = fecha.getFullYear();
-    
-    // Posicionar día, mes y año en sus respectivas columnas
-    this.doc.text(dia, 162, 46);
-    this.doc.text(mes, 173, 46);
-    this.doc.text(año.toString(), 184, 46);
-  }
+    if (formData.horaSuperior) {
+      this.doc.text(formData.horaSuperior, 162, 30);
+    }
 
-  if (formData.horaInferior) {
-    this.doc.text(formData.horaInferior, 162, 51);
-  }
+    // Fecha y hora inferior (compromiso de entrega)
+    if (formData.fechaInferior) {
+      const fecha = new Date(formData.fechaInferior);
+      const dia = fecha.getDate().toString().padStart(2, '0');
+      const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+      const año = fecha.getFullYear();
 
-  
+      // Posicionar día, mes y año en sus respectivas columnas
+      this.doc.text(dia, 162, 46);
+      this.doc.text(mes, 173, 46);
+      this.doc.text(año.toString(), 184, 46);
+    }
+
+    if (formData.horaInferior) {
+      this.doc.text(formData.horaInferior, 162, 51);
+    }
+
+
     // Restaurar configuración original
     this.doc.setTextColor(0);
     this.doc.setFont('helvetica', 'normal');
