@@ -7,6 +7,12 @@ export class PDFService {
   
   /** @type {string} Ruta del logo de la empresa */
   logoPath = '/images/LOGO INDUGAL(1).png';
+
+  /** @type {string} Ruta del círculo rojo largo */
+  largoRojoPath = '/images/largoRojo.png';
+
+  /** @type {string} Ruta del círculo rojo corto */
+  cortoRojoPath = '/images/cortoRojo.png';
   
   /** @type {Object} Configuración común del documento */
   static DOC_CONFIG = {
@@ -79,6 +85,62 @@ export class PDFService {
       this.doc.addImage(imgData, 'PNG', 5, 5, dimensions.width, dimensions.height);
     } catch (error) {
       console.error('Error al cargar el logo:', error);
+    }
+  }
+
+  /**
+   * Agrega el círculo rojo largo sobre la fecha inferior
+   * @private
+   * @async
+   */
+  async addLargoRojo() {
+    try {
+      const imgUrl = `${window.location.origin}${this.largoRojoPath}`;
+      const imgData = await this.urlToBase64(imgUrl);
+      
+      // Ajustamos las dimensiones para cubrir la fecha inferior y el texto de compromiso
+      this.doc.addImage(imgData, 'PNG', 195, 38, 50, 18);
+    } catch (error) {
+      console.error('Error al cargar el círculo rojo largo:', error);
+    }
+  }
+
+  /**
+   * Agrega el círculo rojo corto sobre los rectángulos de hora
+   * @private
+   * @async
+   */
+  async addCortoRojo() {
+    try {
+      const imgUrl = `${window.location.origin}${this.cortoRojoPath}`;
+      const imgData = await this.urlToBase64(imgUrl);
+      
+      // Ajustamos las dimensiones para cubrir los rectángulos de hora
+      this.doc.addImage(imgData, 'PNG', 118, 38, 28, 20);
+    } catch (error) {
+      console.error('Error al cargar el círculo rojo corto:', error);
+    }
+  }
+
+  /**
+   * Convierte una URL a base64
+   * @private
+   * @async
+   * @param {string} url - URL de la imagen
+   * @returns {Promise<string>} Imagen en formato base64
+   */
+  async urlToBase64(url) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      throw new Error('Error al convertir URL a base64');
     }
   }
 
@@ -652,6 +714,8 @@ export class PDFService {
     this.drawDocumento();
     this.drawRectangulo();
     this.drawDetails();
+    await this.addLargoRojo(); // Agregar círculo rojo largo
+    await this.addCortoRojo(); // Agregar círculo rojo corto
     this.drawFormData(formData);
     this.drawFooter(footerTitle);
   }
