@@ -1,4 +1,4 @@
-//src/components/PDFGenerator/index.js
+// src/components/PDFGenerator/index.js
 'use client';
 
 import React from 'react';
@@ -12,15 +12,14 @@ const PDFGenerator = () => {
     formData,
     isLoading,
     error,
+    savedId,
     handleFormChange,
     generatePDF,
     resetForm
   } = usePDFForm();
 
   return (
-    // Contenedor principal con altura mínima del viewport y fondo
     <div className="min-h-screen w-full bg-slate-900">
-      {/* Gradiente de fondo que cubre toda la página */}
       <div className="min-h-screen w-full bg-gradient-to-b from-slate-950 to-slate-900 py-12 px-4">
         <div className="container mx-auto max-w-7xl">
           {/* Header con Logo */}
@@ -48,6 +47,19 @@ const PDFGenerator = () => {
             </div>
           </div>
 
+          {/* Success Message */}
+          {savedId && (
+            <div className="mb-6 bg-green-900/30 border-l-4 border-green-500 rounded-lg overflow-hidden">
+              <div className="p-4 flex items-start">
+                <div className="ml-3">
+                  <p className="text-sm text-green-400">
+                    Datos guardados exitosamente. ID: {savedId}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Error Alert */}
           {error && (
             <div className="mb-6 bg-red-900/30 border-l-4 border-red-500 rounded-lg overflow-hidden">
@@ -69,7 +81,9 @@ const PDFGenerator = () => {
               onChange={handleFormChange}
               onGenerate={async () => {
                 const success = await generatePDF();
-                if (success) resetForm();
+                if (success) {
+                  setTimeout(resetForm, 3000);
+                }
               }}
               isLoading={isLoading}
             />

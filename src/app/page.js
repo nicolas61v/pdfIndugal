@@ -1,9 +1,15 @@
 // src/app/page.js
-import PDFGenerator from '@/components/PDFGenerator';
+'use client';
+
+import dynamic from 'next/dynamic';
+
+const PDFGenerator = dynamic(() => import('@/components/PDFGenerator'), {
+  ssr: false
+});
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main>
       <PDFGenerator />
     </main>
   );

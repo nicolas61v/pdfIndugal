@@ -534,32 +534,32 @@ export class PDFService {
 
     // Dibujar datos de empresa y responsables
     if (formData.empresa) {
-      this.doc.text(formData.empresa, 6, 25);
+      this.doc.text(formData.empresa, 6, 26);
     }
 
     if (formData.responsableTrae) {
-      this.doc.text(formData.responsableTrae, 6, 35);
+      this.doc.text(formData.responsableTrae, 6, 36);
     }
 
     if (formData.facturarA) {
-      this.doc.text(formData.facturarA, 78, 25);
+      this.doc.text(formData.facturarA, 78, 26);
     }
 
     if (formData.responsableFacturar) {
-      this.doc.text(formData.responsableFacturar, 78, 35);
+      this.doc.text(formData.responsableFacturar, 78, 36);
     }
 
     // Dibujar horas con posiciones precisas
     if (formData.horaLlegada) {
-      this.doc.text(formData.horaLlegada, 119, 42);
+      this.doc.text(formData.horaLlegada, 125, 43);
     }
 
     if (formData.horaInicio) {
-      this.doc.text(formData.horaInicio, 119, 48);
+      this.doc.text(formData.horaInicio, 125, 49);
     }
 
     if (formData.horaFinal) {
-      this.doc.text(formData.horaFinal, 119, 54);
+      this.doc.text(formData.horaFinal, 125, 55);
     }
 
    // Configuración para los checkboxes
@@ -647,13 +647,13 @@ aspectos.forEach((aspecto, index) => {
       const año = fecha.getFullYear();
 
       // Posicionar día, mes y año en sus respectivas columnas
-      this.doc.text(dia, 162, 24);
-      this.doc.text(mes, 173, 24);
-      this.doc.text(año.toString(), 184, 24);
+      this.doc.text(dia, 163, 25);
+      this.doc.text(mes, 174, 25);
+      this.doc.text(año.toString(), 183, 25);
     }
 
     if (formData.horaSuperior) {
-      this.doc.text(formData.horaSuperior, 162, 30);
+      this.doc.text(formData.horaSuperior, 173, 31);
     }
 
     // Fecha y hora inferior (compromiso de entrega)
@@ -664,13 +664,13 @@ aspectos.forEach((aspecto, index) => {
       const año = fecha.getFullYear();
 
       // Posicionar día, mes y año en sus respectivas columnas
-      this.doc.text(dia, 162, 46);
-      this.doc.text(mes, 173, 46);
-      this.doc.text(año.toString(), 184, 46);
+      this.doc.text(dia, 163, 48);
+      this.doc.text(mes, 173, 48);
+      this.doc.text(año.toString(), 180, 48);
     }
 
     if (formData.horaInferior) {
-      this.doc.text(formData.horaInferior, 162, 51);
+      this.doc.text(formData.horaInferior, 170, 53);
     }
 
 
