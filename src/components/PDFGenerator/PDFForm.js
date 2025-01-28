@@ -1,10 +1,11 @@
 //src/components/PDFGenerator/PDFForm.js
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
+  const [validationInput, setValidationInput] = useState('');
   const aspectos = [
     { name: 'excesosGrasas', label: 'Exceso de Grasas' },
     { name: 'excesosOxidacion', label: 'Exceso de oxidación' },
@@ -16,13 +17,24 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
     { name: 'drenaje', label: 'Perforacion de Drenaje y/o para colgado' }
   ];
 
+
   const inputBaseClass = "w-full bg-slate-800 border-slate-600 text-slate-100 rounded-md shadow-sm " +
     "focus:border-blue-500 focus:ring focus:ring-blue-500/20 " +
     "placeholder-slate-400 p-3 text-lg";
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validationInput.toLowerCase() === 'caliente') {
+      onGenerate();
+      setValidationInput(''); // Limpia el campo después de generar
+    } else {
+      alert('Por favor escribe "CALIENTE" para confirmar que eres consciente del formulario que estás llenando');
+    }
+  };
+
   return (
     <form className="space-y-8 bg-slate-900 text-slate-100 p-8 rounded-lg shadow-xl max-w-7xl mx-auto"
-      onSubmit={(e) => { e.preventDefault(); onGenerate(); }}>
+      onSubmit={handleSubmit}>
 
       {/* Sección de empresa y responsables */}
       <div className="space-y-8">
@@ -285,11 +297,29 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
         </div>
       </div>
 
+      {/* Sección de validación */}
+      <div className="space-y-8 bg-slate-800/30 p-8 rounded-lg">
+        <h3 className="text-2xl font-bold text-blue-400 border-b border-slate-700 pb-3">
+          Validación de Confirmación
+        </h3>
+
+        <div>
+          <label className="block text-lg font-medium text-slate-300 mb-2">
+            Escribe "CALIENTE" para confirmar:
+          </label>
+          <input
+            className={inputBaseClass}
+            value={validationInput}
+            onChange={(e) => setValidationInput(e.target.value)}
+            placeholder="Escribe la palabra clave aquí..."
+          />
+        </div>
+      </div>
+
       {/* Botones de acción */}
       <div className="flex justify-end pt-6 border-t border-slate-700">
         <button
-          type="button"
-          onClick={onGenerate}
+          type="submit"
           disabled={isLoading}
           className="px-8 py-4 bg-blue-600 text-white text-lg rounded-lg shadow-lg 
                    hover:bg-blue-500 focus:outline-none focus:ring-2 
