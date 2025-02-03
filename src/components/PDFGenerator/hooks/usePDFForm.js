@@ -26,6 +26,8 @@ export const usePDFForm = () => {
     fechaInferior: '',
     horaInferior: '',
     recepcionEntrega: 'R',
+    tiempoEntregaPor: '', // 'cliente' o 'industrias'
+    nombreTiempoEntrega: '', // nombre de quien sugiere
     descripcion: '',
     linea: '',
     procesoRef: '',
@@ -132,6 +134,8 @@ export const usePDFForm = () => {
       fechaInferior: '',
       horaInferior: '',
       recepcionEntrega: 'R',
+      tiempoEntregaPor: '', // 'cliente' o 'industrias'
+      nombreTiempoEntrega: '', // nombre de quien sugiere
       descripcion: '',
       linea: '',
       procesoRef: '',

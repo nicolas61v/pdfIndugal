@@ -204,6 +204,49 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
         </div>
       </div>
 
+      {/* Tiempo de entrega */}
+      <div className="space-y-4 mt-6">
+        <label className="block text-lg font-medium text-slate-300">
+          Tiempo para la entrega del producto sugerido por:
+        </label>
+        <div className="flex gap-8">
+          <label className="flex items-center space-x-4 p-4 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors cursor-pointer">
+            <input
+              type="radio"
+              name="tiempoEntregaPor"
+              value="cliente"
+              checked={formData.tiempoEntregaPor === 'cliente'}
+              onChange={onChange}
+              className="w-6 h-6 border-slate-600 text-blue-500 focus:ring-offset-slate-800 focus:ring-blue-500"
+            />
+            <span className="text-lg text-slate-300">Cliente</span>
+          </label>
+          <label className="flex items-center space-x-4 p-4 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors cursor-pointer">
+            <input
+              type="radio"
+              name="tiempoEntregaPor"
+              value="industrias"
+              checked={formData.tiempoEntregaPor === 'industrias'}
+              onChange={onChange}
+              className="w-6 h-6 border-slate-600 text-blue-500 focus:ring-offset-slate-800 focus:ring-blue-500"
+            />
+            <span className="text-lg text-slate-300">Industrias y Galvanizados</span>
+          </label>
+        </div>
+        <div className="mt-4">
+          <label className="block text-lg font-medium text-slate-300 mb-2">
+            Nombre de quien sugiere:
+          </label>
+          <input
+            className={inputBaseClass}
+            name="nombreTiempoEntrega"
+            value={formData.nombreTiempoEntrega}
+            onChange={onChange}
+            placeholder="Nombre completo"
+          />
+        </div>
+      </div>
+
       {/* Aspectos a considerar */}
       <div className="space-y-8 bg-gradient-to-r from-slate-800/50 to-slate-900/50 p-8 rounded-lg">
         <h3 className="text-2xl font-bold text-blue-400 border-b border-slate-700 pb-3">

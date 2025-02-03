@@ -432,13 +432,13 @@ export class PDFService {
     this.doc.setFontSize(8);
     this.doc.setFont('helvetica', 'bold');
     this.doc.text('DOCUMENTO', 261, 41);
-    
+
     if (formData?.documentNumber) {
       this.doc.setFont('helvetica', 'normal');
       this.doc.setFontSize(12);
       this.doc.setTextColor(0, 0, 255);
       // Centrar el número en el rectángulo
-      const x = 250 + (40/2); // Centro del rectángulo
+      const x = 250 + (40 / 2); // Centro del rectángulo
       this.doc.text(formData.documentNumber.toString(), x, 47, { align: 'center' });
       this.doc.setTextColor(0);
     }
@@ -560,6 +560,23 @@ export class PDFService {
     if (formData.responsableFacturar) {
       this.doc.text(formData.responsableFacturar, 78, 36);
     }
+    // Marcar el checkbox de tiempo de entrega
+    if (formData.tiempoEntregaPor) {
+      this.doc.setFont('helvetica', 'bold');
+      if (formData.tiempoEntregaPor === 'cliente') {
+        this.doc.text('X', 16, 45);
+      } else if (formData.tiempoEntregaPor === 'industrias') {
+        this.doc.text('X', 61, 45);
+      }
+    }
+
+    // Escribir el nombre de quien sugiere el tiempo
+    if (formData.nombreTiempoEntrega) {
+      this.doc.setFont('helvetica', 'normal');
+      this.doc.setTextColor(0, 0, 255);
+      this.doc.text(formData.nombreTiempoEntrega, 22, 51);
+      this.doc.setTextColor(0);
+    }
 
     // Dibujar horas con posiciones precisas
     if (formData.horaLlegada) {
@@ -613,6 +630,7 @@ export class PDFService {
         }
       }
     });
+
     // Marcar R/E según selección
     if (formData.recepcionEntrega) {
       const isRecepcion = formData.recepcionEntrega === 'R';
@@ -684,7 +702,6 @@ export class PDFService {
     if (formData.horaInferior) {
       this.doc.text(formData.horaInferior, 170, 53);
     }
-
 
     // Restaurar configuración original
     this.doc.setTextColor(0);
