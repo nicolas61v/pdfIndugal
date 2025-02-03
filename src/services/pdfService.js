@@ -427,9 +427,21 @@ export class PDFService {
     this.doc.line(192, 46, 195, 48); // Línea diagonal hacia abajo
   }
 
-  drawDocumento() {
+  drawDocumento(formData) {
     this.doc.rect(250, 38, 40, 14);
+    this.doc.setFontSize(8);
+    this.doc.setFont('helvetica', 'bold');
     this.doc.text('DOCUMENTO', 261, 41);
+    
+    if (formData?.documentNumber) {
+      this.doc.setFont('helvetica', 'normal');
+      this.doc.setFontSize(12);
+      this.doc.setTextColor(0, 0, 255);
+      // Centrar el número en el rectángulo
+      const x = 250 + (40/2); // Centro del rectángulo
+      this.doc.text(formData.documentNumber.toString(), x, 47, { align: 'center' });
+      this.doc.setTextColor(0);
+    }
   }
 
   drawProductTable() {
@@ -562,45 +574,45 @@ export class PDFService {
       this.doc.text(formData.horaFinal, 125, 55);
     }
 
-   // Configuración para los checkboxes
-const aspectosPosition = {
-  x: 234,
-  xNo: 239,
-  yStart: 10,
-  yIncrement: 3
-};
+    // Configuración para los checkboxes
+    const aspectosPosition = {
+      x: 234,
+      xNo: 239,
+      yStart: 10,
+      yIncrement: 3
+    };
 
-// Marcar checkboxes
-this.doc.setFontSize(10);
-this.doc.setFont('helvetica', 'bold');
+    // Marcar checkboxes
+    this.doc.setFontSize(10);
+    this.doc.setFont('helvetica', 'bold');
 
-// Lista de aspectos que pueden tener X
-const aspectos = [
-  'excesosGrasas', 
-  'excesosOxidacion', 
-  'excesosCalamina', 
-  'pintura', 
-  'recubrimientoBuque', 
-  'stickers', 
-  'soldaduraMalEscoriada',
-  null,  // Espacio para 'perforacionDe' que no lleva X
-  'drenaje'  // Ahora está una posición más abajo
-];
+    // Lista de aspectos que pueden tener X
+    const aspectos = [
+      'excesosGrasas',
+      'excesosOxidacion',
+      'excesosCalamina',
+      'pintura',
+      'recubrimientoBuque',
+      'stickers',
+      'soldaduraMalEscoriada',
+      null,  // Espacio para 'perforacionDe' que no lleva X
+      'drenaje'  // Ahora está una posición más abajo
+    ];
 
-aspectos.forEach((aspecto, index) => {
-  // Solo procesar si el aspecto no es null
-  if (aspecto) {
-    const y = aspectosPosition.yStart + (index * aspectosPosition.yIncrement);
-    
-    if (formData[aspecto]) {
-      // Si está marcado, poner X en SI
-      this.doc.text('X', aspectosPosition.x + 0.5, y);
-    } else {
-      // Si no está marcado, poner X en NO
-      this.doc.text('X', aspectosPosition.xNo + 0.5, y);
-    }
-  }
-});
+    aspectos.forEach((aspecto, index) => {
+      // Solo procesar si el aspecto no es null
+      if (aspecto) {
+        const y = aspectosPosition.yStart + (index * aspectosPosition.yIncrement);
+
+        if (formData[aspecto]) {
+          // Si está marcado, poner X en SI
+          this.doc.text('X', aspectosPosition.x + 0.5, y);
+        } else {
+          // Si no está marcado, poner X en NO
+          this.doc.text('X', aspectosPosition.xNo + 0.5, y);
+        }
+      }
+    });
     // Marcar R/E según selección
     if (formData.recepcionEntrega) {
       const isRecepcion = formData.recepcionEntrega === 'R';
@@ -726,7 +738,7 @@ aspectos.forEach((aspecto, index) => {
     this.drawTimeSection();
     this.drawFecha();
     this.drawProductTable();
-    this.drawDocumento();
+    this.drawDocumento(formData);
     this.drawRectangulo();
     this.drawDetails();
     this.addLargoRojo(); // Agregar círculo rojo largo

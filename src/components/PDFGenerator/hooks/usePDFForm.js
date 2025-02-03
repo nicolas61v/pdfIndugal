@@ -10,9 +10,9 @@ export const usePDFForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [savedId, setSavedId] = useState(null);
-  const [documentNumber, setDocumentNumber] = useState(null);
   
   const [formData, setFormData] = useState({
+    documentNumber: null, // El consecutivo se generará automáticamente
     empresa: '',
     responsableTrae: '',
     responsableFacturar: '',
@@ -20,11 +20,11 @@ export const usePDFForm = () => {
     horaLlegada: '',
     horaInicio: '',
     horaFinal: '',
-    fechaSuperior: '',
-    horaSuperior: '',
+    fechaSuperior: new Date().toISOString().split('T')[0], // Fecha actual por defecto
+    horaSuperior: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
     fechaInferior: '',
     horaInferior: '',
-    recepcionEntrega: '',
+    recepcionEntrega: 'R', // Valor por defecto
     descripcion: '',
     linea: '',
     procesoRef: '',
@@ -38,32 +38,26 @@ export const usePDFForm = () => {
     soldaduraMalEscoriada: false,
     perforacionDe: false,
     drenaje: false,
-    otros: '',
-    documentNumber: null
+    otros: ''
   });
 
+  // Obtener el consecutivo al montar el componente
   useEffect(() => {
     const initializeDocument = async () => {
       try {
-        setIsLoading(true);
         const consecutive = await ConsecutiveService.getNextConsecutive();
-        setDocumentNumber(consecutive);
         setFormData(prev => ({
           ...prev,
           documentNumber: consecutive
         }));
       } catch (error) {
-        setError('Error al obtener número de documento');
-        console.error('Error inicializando documento:', error);
-      } finally {
-        setIsLoading(false);
+        console.error('Error al obtener consecutivo:', error);
+        setError('Error al generar número de documento');
       }
     };
 
-    if (!documentNumber) {
-      initializeDocument();
-    }
-  }, [documentNumber]);
+    initializeDocument();
+  }, []);
 
   const handleFormChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -73,31 +67,17 @@ export const usePDFForm = () => {
     }));
   };
 
-  const handleDateChange = (name, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
   const validateForm = () => {
+    // Solo validamos los campos realmente necesarios
     const requiredFields = [
-      'empresa',
-      'responsableTrae',
-      'facturarA',
-      'responsableFacturar',
-      'fechaSuperior',
-      'fechaInferior'
+      'documentNumber', // El consecutivo es obligatorio
+      'fechaSuperior'  // Al menos necesitamos la fecha de recepción
     ];
 
     const missingFields = requiredFields.filter(field => !formData[field]);
 
     if (missingFields.length > 0) {
-      throw new Error('Por favor complete todos los campos requeridos');
-    }
-
-    if (!documentNumber) {
-      throw new Error('No se ha generado un número de documento válido');
+      throw new Error('Error en validación del formulario');
     }
   };
 
@@ -108,18 +88,10 @@ export const usePDFForm = () => {
     try {
       validateForm();
 
-      // Asegurarnos de que el número de documento sigue siendo válido
-      const isValid = await ConsecutiveService.validateConsecutive(documentNumber);
-      if (!isValid) {
-        throw new Error('El número de documento ya no es válido. Por favor, recargue el formulario.');
-      }
-
-      // Guardamos en Firestore incluyendo el número de documento
+      // Guardamos en Firestore
       const saveResult = await saveFormToFirestore({
         ...formData,
-        documentNumber,
-        createdAt: new Date(),
-        status: 'completed'
+        createdAt: new Date()
       });
       
       if (!saveResult.success) {
@@ -128,20 +100,14 @@ export const usePDFForm = () => {
 
       setSavedId(saveResult.id);
 
-      // Generamos el PDF con el número de documento
-      const doc = await pdfService.generatePDF({
-        ...formData,
-        documentNumber
-      });
-      
-      // Guardamos el PDF
-      const filename = `recepcion-producto-${documentNumber}.pdf`;
-      pdfService.savePDF(filename);
+      // Generamos el PDF
+      const doc = await pdfService.generatePDF(formData);
+      pdfService.savePDF(`recepcion-producto-${formData.documentNumber}.pdf`);
       
       return true;
     } catch (error) {
-      setError(error.message || 'Error al procesar la solicitud. Por favor, intente nuevamente.');
-      console.error('Error en generatePDF:', error);
+      setError(error.message || 'Error al procesar la solicitud.');
+      console.error('Error:', error);
       return false;
     } finally {
       setIsLoading(false);
@@ -149,12 +115,12 @@ export const usePDFForm = () => {
   };
 
   const resetForm = async () => {
-    setIsLoading(true);
     try {
-      // Obtener nuevo número de documento
+      // Obtener nuevo consecutivo para el siguiente formulario
       const newConsecutive = await ConsecutiveService.getNextConsecutive();
       
       setFormData({
+        documentNumber: newConsecutive,
         empresa: '',
         responsableTrae: '',
         responsableFacturar: '',
@@ -162,11 +128,11 @@ export const usePDFForm = () => {
         horaLlegada: '',
         horaInicio: '',
         horaFinal: '',
-        fechaSuperior: '',
-        horaSuperior: '',
+        fechaSuperior: new Date().toISOString().split('T')[0],
+        horaSuperior: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
         fechaInferior: '',
         horaInferior: '',
-        recepcionEntrega: '',
+        recepcionEntrega: 'R',
         descripcion: '',
         linea: '',
         procesoRef: '',
@@ -180,18 +146,13 @@ export const usePDFForm = () => {
         soldaduraMalEscoriada: false,
         perforacionDe: false,
         drenaje: false,
-        otros: '',
-        documentNumber: newConsecutive
+        otros: ''
       });
-      
-      setDocumentNumber(newConsecutive);
       setError(null);
       setSavedId(null);
     } catch (error) {
-      setError('Error al reiniciar el formulario');
-      console.error('Error en resetForm:', error);
-    } finally {
-      setIsLoading(false);
+      console.error('Error al resetear formulario:', error);
+      setError('Error al generar nuevo número de documento');
     }
   };
 
@@ -200,12 +161,8 @@ export const usePDFForm = () => {
     isLoading,
     error,
     savedId,
-    documentNumber,
     handleFormChange,
-    handleDateChange,
     generatePDF,
     resetForm
   };
 };
-
-export default usePDFForm;
