@@ -33,9 +33,9 @@ export class TemplatePdfService {
         responsableFacturar: { x: 98, y: 36 },
 
         // === TIEMPO DE ENTREGA ===
-        checkboxCliente: { x: 16, y: 45 },
-        checkboxIndustrias: { x: 61, y: 45 },
-        nombreTiempoEntrega: { x: 22, y: 51 },
+        checkboxCliente: { x: 39, y: 49 },
+        checkboxIndustrias: { x: 39, y: 53 },
+        nombreTiempoEntrega: { x: 55, y: 51 },
 
         // === HORARIOS ===
         horaLlegada: { x: 125, y: 43 },
