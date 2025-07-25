@@ -1,13 +1,16 @@
 // src/components/PDFGenerator/hooks/usePDFForm.js
+// VERSIÓN TEMPORAL SIN FIREBASE PARA TESTING
 'use client';
 
 import { useState, useEffect } from 'react';
-import { pdfService } from '../../../services/pdfService';
-import { saveFormToFirestore } from '../../../services/firestoreService';
-import { ConsecutiveService } from '../../../services/consecutiveService';
+import { templatePdfService } from '../../../services/templatePdfService';
+// Comentamos Firebase temporalmente
+// import { saveFormToFirestore } from '../../../services/firestoreService';
+// import { ConsecutiveService } from '../../../services/consecutiveService';
 
 export const usePDFForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingGuide, setIsLoadingGuide] = useState(false);
   const [error, setError] = useState(null);
   const [savedId, setSavedId] = useState(null);
   const [documentNumber, setDocumentNumber] = useState(null);
@@ -26,8 +29,8 @@ export const usePDFForm = () => {
     fechaInferior: '',
     horaInferior: '',
     recepcionEntrega: 'R',
-    tiempoEntregaPor: '', // 'cliente' o 'industrias'
-    nombreTiempoEntrega: '', // nombre de quien sugiere
+    tiempoEntregaPor: '',
+    nombreTiempoEntrega: '',
     descripcion: '',
     linea: '',
     procesoRef: '',
@@ -44,27 +47,40 @@ export const usePDFForm = () => {
     otros: ''
   });
 
-  // Obtener el consecutivo solo una vez al montar el componente
+  // CONSECUTIVO TEMPORAL - Usar localStorage
+  const getNextConsecutive = () => {
+    const current = localStorage.getItem('tempConsecutive') || '16500';
+    const next = parseInt(current) + 1;
+    localStorage.setItem('tempConsecutive', next.toString());
+    console.log(`🔢 Consecutivo temporal generado: ${next}`);
+    return next;
+  };
+
+  // Inicializar consecutivo temporal
   useEffect(() => {
     const initializeDocument = async () => {
       try {
-        // Verificar si ya tenemos un número de documento
         if (!documentNumber) {
-          const consecutive = await ConsecutiveService.getCurrentConsecutive();
-          setDocumentNumber(consecutive + 1);
+          // Usar localStorage en lugar de Firebase temporalmente
+          const current = localStorage.getItem('tempConsecutive') || '16500';
+          const next = parseInt(current) + 1;
+          
+          setDocumentNumber(next);
           setFormData(prev => ({
             ...prev,
-            documentNumber: consecutive + 1
+            documentNumber: next
           }));
+          
+          console.log(`📄 Documento temporal inicializado: ${next}`);
         }
       } catch (error) {
-        console.error('Error al obtener consecutivo:', error);
-        setError('Error al obtener número de documento');
+        console.error('Error al inicializar documento temporal:', error);
+        setError('Error al obtener número de documento temporal');
       }
     };
 
     initializeDocument();
-  }, []); // Solo se ejecuta al montar el componente
+  }, []);
 
   const handleFormChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -74,22 +90,31 @@ export const usePDFForm = () => {
     }));
   };
 
-  const generatePDF = async () => {
+  /**
+   * Genera el PDF principal con las 4 copias
+   * VERSIÓN TEMPORAL SIN FIREBASE
+   */
+  const generateMainPDF = async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Aquí obtenemos y actualizamos el consecutivo
-      const newConsecutive = await ConsecutiveService.getNextConsecutive();
-      setFormData(prev => ({
-        ...prev,
-        documentNumber: newConsecutive
-      }));
-
-      // Guardamos en Firestore
-      const saveResult = await saveFormToFirestore({
+      console.log('🚀 Iniciando generación de PDF principal...');
+      
+      // Generar consecutivo temporal
+      const newConsecutive = getNextConsecutive();
+      const updatedFormData = {
         ...formData,
-        documentNumber: newConsecutive,
+        documentNumber: newConsecutive
+      };
+
+      console.log('📄 Datos del formulario:', updatedFormData);
+
+      // COMENTADO TEMPORALMENTE - Firebase
+      /*
+      // Guardar en Firestore
+      const saveResult = await saveFormToFirestore({
+        ...updatedFormData,
         createdAt: new Date()
       });
       
@@ -98,28 +123,65 @@ export const usePDFForm = () => {
       }
 
       setSavedId(saveResult.id);
+      */
 
-      // Generamos el PDF
-      const doc = await pdfService.generatePDF({
-        ...formData,
-        documentNumber: newConsecutive
-      });
-      pdfService.savePDF(`recepcion-producto-${newConsecutive}.pdf`);
+      // Simular guardado exitoso
+      setSavedId(`temp-${newConsecutive}`);
+      console.log('💾 Datos "guardados" temporalmente (sin Firebase)');
+
+      // Generar PDF principal
+      console.log('🎨 Generando PDF con plantillas...');
+      await templatePdfService.generateMainPDF(updatedFormData);
+      templatePdfService.savePDF(`recepcion-producto-${newConsecutive}.pdf`);
       
-      // Actualizamos el documentNumber para el siguiente uso
+      // Actualizar el documentNumber
       setDocumentNumber(newConsecutive);
+      setFormData(prev => ({
+        ...prev,
+        documentNumber: newConsecutive
+      }));
       
+      console.log('✅ PDF principal generado exitosamente');
       return true;
+      
     } catch (error) {
-      setError(error.message || 'Error al procesar la solicitud.');
-      console.error('Error:', error);
+      console.error('❌ Error generando PDF principal:', error);
+      setError(`Error al generar PDF: ${error.message}`);
       return false;
     } finally {
       setIsLoading(false);
     }
   };
 
+  /**
+   * Genera el PDF de la guía manual (sin datos)
+   */
+  const generateGuidePDF = async () => {
+    setIsLoadingGuide(true);
+    setError(null);
+    
+    try {
+      console.log('📋 Generando PDF de guía manual...');
+      
+      // Generar PDF de guía
+      await templatePdfService.generateGuidePDF();
+      templatePdfService.savePDF('guia-manual-reverso.pdf');
+      
+      console.log('✅ PDF de guía generado exitosamente');
+      return true;
+      
+    } catch (error) {
+      console.error('❌ Error generando guía:', error);
+      setError('Error al generar guía manual: ' + error.message);
+      return false;
+    } finally {
+      setIsLoadingGuide(false);
+    }
+  };
+
   const resetForm = () => {
+    console.log('🔄 Reseteando formulario...');
+    
     setFormData(prev => ({
       ...prev,
       empresa: '',
@@ -134,8 +196,8 @@ export const usePDFForm = () => {
       fechaInferior: '',
       horaInferior: '',
       recepcionEntrega: 'R',
-      tiempoEntregaPor: '', // 'cliente' o 'industrias'
-      nombreTiempoEntrega: '', // nombre de quien sugiere
+      tiempoEntregaPor: '',
+      nombreTiempoEntrega: '',
       descripcion: '',
       linea: '',
       procesoRef: '',
@@ -158,10 +220,12 @@ export const usePDFForm = () => {
   return {
     formData,
     isLoading,
+    isLoadingGuide,
     error,
     savedId,
     handleFormChange,
-    generatePDF,
+    generateMainPDF,
+    generateGuidePDF,
     resetForm
   };
 };

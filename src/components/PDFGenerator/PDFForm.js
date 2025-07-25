@@ -2,10 +2,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileText, BookOpen } from 'lucide-react';
 
-const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
+const PDFForm = ({ 
+  formData, 
+  onChange, 
+  onGenerateMain,
+  onGenerateGuide, 
+  isLoading, 
+  isLoadingGuide 
+}) => {
   const [validationInput, setValidationInput] = useState('');
+  
   const aspectos = [
     { name: 'excesosGrasas', label: 'Exceso de Grasas' },
     { name: 'excesosOxidacion', label: 'Exceso de oxidación' },
@@ -14,28 +22,31 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
     { name: 'recubrimientoBuque', label: 'Pintura recubrimiento buque' },
     { name: 'stickers', label: 'Con stickers' },
     { name: 'soldaduraMalEscoriada', label: 'Soldadura mal escoriadas' },
-    { name: 'drenaje', label: 'Perforacion de Drenaje y/o para colgado' }
+    { name: 'drenaje', label: 'Perforación de Drenaje y/o para colgado' }
   ];
-
 
   const inputBaseClass = "w-full bg-slate-800 border-slate-600 text-slate-100 rounded-md shadow-sm " +
     "focus:border-blue-500 focus:ring focus:ring-blue-500/20 " +
     "placeholder-slate-400 p-3 text-lg";
 
-  const handleSubmit = (e) => {
+  const handleMainSubmit = (e) => {
     e.preventDefault();
     if (validationInput.toLowerCase() === 'caliente') {
-      onGenerate();
-      setValidationInput(''); // Limpia el campo después de generar
+      onGenerateMain();
+      setValidationInput('');
     } else {
       alert('Por favor escribe "CALIENTE" para confirmar que eres consciente del formulario que estás llenando');
     }
   };
 
-  return (
-    <form className="space-y-8 bg-slate-900 text-slate-100 p-8 rounded-lg shadow-xl max-w-7xl mx-auto"
-      onSubmit={handleSubmit}>
+  const handleGuideSubmit = (e) => {
+    e.preventDefault();
+    onGenerateGuide();
+  };
 
+  return (
+    <div className="space-y-8 bg-slate-900 text-slate-100 p-8 rounded-lg shadow-xl max-w-7xl mx-auto">
+      
       {/* Sección de empresa y responsables */}
       <div className="space-y-8">
         <h3 className="text-2xl font-bold text-blue-400 border-b border-slate-700 pb-3">
@@ -340,7 +351,7 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
         </div>
       </div>
 
-      {/* Sección de validación */}
+      {/* Sección de validación para PDF principal */}
       <div className="space-y-8 bg-slate-800/30 p-8 rounded-lg">
         <h3 className="text-2xl font-bold text-blue-400 border-b border-slate-700 pb-3">
           Validación de Confirmación
@@ -348,7 +359,7 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
 
         <div>
           <label className="block text-lg font-medium text-slate-300 mb-2">
-            Escribe "CALIENTE" para confirmar:
+            Escribe "CALIENTE" para confirmar generación del PDF principal:
           </label>
           <input
             className={inputBaseClass}
@@ -360,27 +371,79 @@ const PDFForm = ({ formData, onChange, onGenerate, isLoading }) => {
       </div>
 
       {/* Botones de acción */}
-      <div className="flex justify-end pt-6 border-t border-slate-700">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-8 py-4 bg-blue-600 text-white text-lg rounded-lg shadow-lg 
-                   hover:bg-blue-500 focus:outline-none focus:ring-2 
-                   focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900
-                   transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                   flex items-center space-x-3"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="animate-spin h-6 w-6" />
-              <span>Generando...</span>
-            </>
-          ) : (
-            <span>Generar PDF</span>
-          )}
-        </button>
+      <div className="space-y-6 pt-6 border-t border-slate-700">
+        
+        {/* Botón PDF Principal */}
+        <form onSubmit={handleMainSubmit}>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full px-8 py-4 bg-blue-600 text-white text-lg rounded-lg shadow-lg 
+                     hover:bg-blue-500 focus:outline-none focus:ring-2 
+                     focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900
+                     transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                     flex items-center justify-center space-x-3"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin h-6 w-6" />
+                <span>Generando PDF Principal...</span>
+              </>
+            ) : (
+              <>
+                <FileText className="h-6 w-6" />
+                <span>Generar PDF Principal (4 Copias con Datos)</span>
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Separador visual */}
+        <div className="flex items-center">
+          <div className="flex-1 border-t border-slate-600"></div>
+          <div className="px-4 text-slate-400 text-sm">O</div>
+          <div className="flex-1 border-t border-slate-600"></div>
+        </div>
+
+        {/* Botón Guía Manual */}
+        <form onSubmit={handleGuideSubmit}>
+          <button
+            type="submit"
+            disabled={isLoadingGuide}
+            className="w-full px-8 py-4 bg-green-600 text-white text-lg rounded-lg shadow-lg 
+                     hover:bg-green-500 focus:outline-none focus:ring-2 
+                     focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900
+                     transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                     flex items-center justify-center space-x-3"
+          >
+            {isLoadingGuide ? (
+              <>
+                <Loader2 className="animate-spin h-6 w-6" />
+                <span>Generando Guía...</span>
+              </>
+            ) : (
+              <>
+                <BookOpen className="h-6 w-6" />
+                <span>Generar Guía Manual (Para Reverso)</span>
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Instrucciones de uso */}
+        <div className="bg-slate-800/50 p-6 rounded-lg border-l-4 border-yellow-500">
+          <h4 className="text-lg font-semibold text-yellow-400 mb-3">
+            📋 Instrucciones de Impresión:
+          </h4>
+          <ol className="list-decimal list-inside space-y-2 text-slate-300">
+            <li>Genera y imprime el <strong>PDF Principal</strong> → Obtienes 4 hojas con datos</li>
+            <li>Toma cualquiera de las 4 hojas impresas</li>
+            <li>Voltea la hoja y ponla de nuevo en la impresora</li>
+            <li>Genera e imprime la <strong>Guía Manual</strong> → Se imprime en el reverso</li>
+          </ol>
+        </div>
       </div>
-    </form>
+    </div>
   );
 };
 
