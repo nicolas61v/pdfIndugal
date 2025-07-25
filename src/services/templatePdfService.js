@@ -1,5 +1,5 @@
 // src/services/templatePdfService.js
-// VERSIÓN CON FUENTE IMPONENTE Y COORDENADAS AJUSTABLES
+// VERSIÓN CON COLOR AZUL MARINO UNIFICADO Y FUENTE CONSISTENTE
 import { jsPDF } from 'jspdf';
 
 export class TemplatePdfService {
@@ -38,9 +38,9 @@ export class TemplatePdfService {
         nombreTiempoEntrega: { x: 55, y: 51 },
 
         // === HORARIOS ===
-        horaLlegada: { x: 125, y: 43 },
-        horaInicio: { x: 125, y: 49 },
-        horaFinal: { x: 125, y: 55 },
+        horaLlegada: { x: 134, y: 42 },
+        horaInicio: { x: 134, y: 47 },
+        horaFinal: { x: 134, y: 52 },
 
         // === ASPECTOS (CHECKBOXES) ===
         aspectos: {
@@ -58,8 +58,8 @@ export class TemplatePdfService {
         },
 
         // === RECEPCIÓN/ENTREGA ===
-        recepcionR: { x: 125.5, y: 60 },
-        recepcionE: { x: 136.5, y: 60 },
+        recepcionR: { x: 133, y: 55 },
+        recepcionE: { x: 145, y: 55 },
 
         // === INFORMACIÓN DEL PRODUCTO ===
         linea: { x: 6, y: 73 },
@@ -188,35 +188,15 @@ export class TemplatePdfService {
     }
 
     /**
-     * Configura el estilo IMPONENTE del texto
+     * 🎯 ESTILO UNIFICADO - TODO EN AZUL MARINO CON TIMES BOLD
      * @private
+     * @param {number} fontSize - Tamaño de fuente (por defecto 12)
      */
-    setFormTextStyle() {
-        // FUENTE IMPONENTE - Times Bold con tamaño mayor
-        // Opción 1: Corporativo
-        this.doc.setFont('times', 'bold');
-        this.doc.setFontSize(12);
-        this.doc.setTextColor(25, 25, 112); // Azul marino
-    }
-
-    /**
-     * Configura fuente para checkboxes
-     * @private
-     */
-    setCheckboxStyle() {
-        this.doc.setFont('helvetica', 'bold');
-        this.doc.setFontSize(12);
-        this.doc.setTextColor(0, 0, 0);
-    }
-
-    /**
-     * Configura fuente para números de documento (extra imponente)
-     * @private
-     */
-    setDocumentNumberStyle() {
-        this.doc.setFont('times', 'bold');
-        this.doc.setFontSize(16);
-        this.doc.setTextColor(0, 0, 0);
+    setUnifiedStyle(fontSize = 12) {
+        // FUENTE Y COLOR UNIFICADO PARA TODO
+        this.doc.setFont('times', 'bold');           // Times Bold para todo
+        this.doc.setFontSize(fontSize);              // Tamaño configurable
+        this.doc.setTextColor(25, 25, 112);          // AZUL MARINO para todo
     }
 
     /**
@@ -227,13 +207,14 @@ export class TemplatePdfService {
     drawFormData(formData) {
         if (!formData) return;
 
-        console.log('✍️ Dibujando datos con fuente imponente sobre la plantilla');
+        console.log('✍️ Dibujando datos con estilo UNIFICADO azul marino');
 
         const coords = TemplatePdfService.COORDINATES;
 
-        // === INFORMACIÓN DE EMPRESA ===
-        this.setFormTextStyle();
+        // 🎯 CONFIGURAR ESTILO UNIFICADO AL INICIO
+        this.setUnifiedStyle(12); // Tamaño estándar
 
+        // === INFORMACIÓN DE EMPRESA ===
         if (formData.empresa) {
             this.doc.text(formData.empresa, coords.empresa.x, coords.empresa.y);
         }
@@ -250,9 +231,9 @@ export class TemplatePdfService {
             this.doc.text(formData.responsableFacturar, coords.responsableFacturar.x, coords.responsableFacturar.y);
         }
 
-        // === TIEMPO DE ENTREGA ===
+        // === TIEMPO DE ENTREGA (CHECKBOXES EN AZUL MARINO) ===
         if (formData.tiempoEntregaPor) {
-            this.setCheckboxStyle();
+            // 🎯 Mantener el mismo estilo azul marino para checkboxes
             if (formData.tiempoEntregaPor === 'cliente') {
                 this.doc.text('X', coords.checkboxCliente.x, coords.checkboxCliente.y);
             } else if (formData.tiempoEntregaPor === 'industrias') {
@@ -262,11 +243,10 @@ export class TemplatePdfService {
 
         // Nombre de quien sugiere el tiempo
         if (formData.nombreTiempoEntrega) {
-            this.setFormTextStyle();
             this.doc.text(formData.nombreTiempoEntrega, coords.nombreTiempoEntrega.x, coords.nombreTiempoEntrega.y);
         }
 
-        // === HORARIOS ===
+        // === HORARIOS (TODOS EN AZUL MARINO) ===
         if (formData.horaLlegada) {
             this.doc.text(formData.horaLlegada, coords.horaLlegada.x, coords.horaLlegada.y);
         }
@@ -279,9 +259,7 @@ export class TemplatePdfService {
             this.doc.text(formData.horaFinal, coords.horaFinal.x, coords.horaFinal.y);
         }
 
-        // === CHECKBOXES DE ASPECTOS ===
-        this.setCheckboxStyle();
-
+        // === CHECKBOXES DE ASPECTOS (TODOS EN AZUL MARINO) ===
         const aspectosFields = [
             'excesosGrasas', 'excesosOxidacion', 'excesosCalamina', 'pintura',
             'recubrimientoBuque', 'stickers', 'soldaduraMalEscoriada', 'drenaje'
@@ -300,7 +278,7 @@ export class TemplatePdfService {
             }
         });
 
-        // === RECEPCIÓN/ENTREGA ===
+        // === RECEPCIÓN/ENTREGA (EN AZUL MARINO) ===
         if (formData.recepcionEntrega) {
             const isRecepcion = formData.recepcionEntrega === 'R';
             const coordToUse = isRecepcion ? coords.recepcionR : coords.recepcionE;
@@ -308,8 +286,6 @@ export class TemplatePdfService {
         }
 
         // === INFORMACIÓN DEL PRODUCTO ===
-        this.setFormTextStyle();
-
         if (formData.linea) {
             this.doc.text(formData.linea, coords.linea.x, coords.linea.y);
         }
@@ -334,7 +310,7 @@ export class TemplatePdfService {
             this.doc.text(formData.otros, coords.otros.x, coords.otros.y);
         }
 
-        // === FECHAS Y HORAS ===
+        // === FECHAS Y HORAS (TODAS EN AZUL MARINO) ===
         // Fecha superior
         if (formData.fechaSuperior) {
             const fecha = new Date(formData.fechaSuperior);
@@ -367,19 +343,21 @@ export class TemplatePdfService {
             this.doc.text(formData.horaInferior, coords.horaInferior.x, coords.horaInferior.y);
         }
 
-        // === NÚMERO DE DOCUMENTO (EXTRA IMPONENTE) ===
+        // === NÚMERO DE DOCUMENTO (EN AZUL MARINO PERO MÁS GRANDE) ===
         if (formData.documentNumber) {
-            this.setDocumentNumberStyle();
+            // 🎯 Usar el mismo estilo pero con tamaño más grande
+            this.setUnifiedStyle(16); // Tamaño más grande para el número
             this.doc.text(
                 formData.documentNumber.toString(),
                 coords.documentNumber.x,
                 coords.documentNumber.y,
                 { align: 'center' }
             );
+            // Volver al tamaño estándar
+            this.setUnifiedStyle(12);
         }
 
-        // Restaurar configuración por si acaso
-        this.setFormTextStyle();
+        console.log('✅ Todos los elementos dibujados en AZUL MARINO unificado');
     }
 
     /**
@@ -390,26 +368,26 @@ export class TemplatePdfService {
      */
     async generateMainPDF(formData = {}) {
         try {
-            console.log('🚀 Iniciando generación de PDF con fuente imponente...');
+            console.log('🚀 Iniciando generación de PDF con estilo UNIFICADO azul marino...');
             this.initDocument();
 
             for (let i = 0; i < TemplatePdfService.MAIN_TEMPLATES.length; i++) {
                 if (i > 0) this.doc.addPage();
 
                 const template = TemplatePdfService.MAIN_TEMPLATES[i];
-                console.log(`🎨 Procesando ${template.name} con fuente imponente...`);
+                console.log(`🎨 Procesando ${template.name} con estilo unificado...`);
 
                 // Agregar fondo de plantilla optimizada
                 await this.addTemplateBackground(template.file);
 
-                // Agregar datos del formulario con fuente imponente
+                // Agregar datos del formulario con estilo unificado
                 this.drawFormData(formData);
             }
 
-            console.log('✅ PDF con fuente imponente generado exitosamente');
+            console.log('✅ PDF con estilo UNIFICADO generado exitosamente');
             return this.doc;
         } catch (error) {
-            console.error('❌ Error generando PDF con fuente imponente:', error);
+            console.error('❌ Error generando PDF con estilo unificado:', error);
             throw error;
         }
     }
@@ -421,13 +399,13 @@ export class TemplatePdfService {
      */
     async generateGuidePDF() {
         try {
-            console.log('📋 Generando PDF de guía con fuente imponente...');
+            console.log('📋 Generando PDF de guía con estilo unificado...');
             this.initDocument();
 
             // Solo agregar la plantilla de texto optimizada
             await this.addTemplateBackground(TemplatePdfService.GUIDE_TEMPLATE);
 
-            console.log('✅ PDF de guía con fuente imponente generado exitosamente');
+            console.log('✅ PDF de guía con estilo unificado generado exitosamente');
             return this.doc;
         } catch (error) {
             console.error('❌ Error generando PDF de guía:', error);
@@ -443,7 +421,7 @@ export class TemplatePdfService {
         if (!this.doc) {
             throw new Error('Documento no inicializado');
         }
-        console.log(`💾 Guardando PDF con fuente imponente: ${filename}`);
+        console.log(`💾 Guardando PDF con estilo unificado: ${filename}`);
         this.doc.save(filename);
     }
 }
