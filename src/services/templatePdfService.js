@@ -44,43 +44,44 @@ export class TemplatePdfService {
 
         // === ASPECTOS (CHECKBOXES) ===
         aspectos: {
-            excesosGrasas: { x: 234.5, y: 10 },
-            excesosOxidacion: { x: 234.5, y: 13 },
-            excesosCalamina: { x: 234.5, y: 16 },
-            pintura: { x: 234.5, y: 19 },
-            recubrimientoBuque: { x: 234.5, y: 22 },
-            stickers: { x: 234.5, y: 25 },
-            soldaduraMalEscoriada: { x: 234.5, y: 28 },
-            drenaje: { x: 234.5, y: 34 }
+            excesosGrasas: { x: 239.5, y: 13 },
+            excesosOxidacion: { x: 239.5, y: 16 },
+            excesosCalamina: { x: 239.5, y: 19 },
+            pintura: { x: 239.5, y: 22 },
+            recubrimientoBuque: { x: 239.5, y: 25 },
+            stickers: { x: 239.5, y: 28 },
+            soldaduraMalEscoriada: { x: 239.5, y: 30.5 },
+            drenaje: { x: 239.5, y: 35 }
         },
         aspectosNo: {
-            x: 239.5 // X para NO (todas usan la misma X)
+            x: 245.5 // X para NO (todas usan la misma X)
         },
+        otros: { x: 200, y: 41 },
 
         // === RECEPCIÓN/ENTREGA ===
-        recepcionR: { x: 133, y: 55 },
-        recepcionE: { x: 145, y: 55 },
+        recepcionR: { x: 134, y: 55 },
+        recepcionE: { x: 144, y: 55 },
 
         // === INFORMACIÓN DEL PRODUCTO ===
-        linea: { x: 6, y: 73 },
-        procesoRef: { x: 18, y: 73 },
-        codigoRef: { x: 41, y: 73 },
-        descripcion: { x: 61, y: 73 },
-        otros: { x: 230, y: 36 },
+        linea: { x: 24, y: 64 },
+        procesoRef: { x: 35, y: 64 },
+        codigoRef: { x: 54, y: 64 },
+        descripcion: { x: 71, y: 64 },
+        
 
         // === FECHAS ===
         fechaSuperior: {
-            dia: { x: 163, y: 25 },
-            mes: { x: 174, y: 25 },
-            año: { x: 183, y: 25 }
+            dia: { x: 173, y: 30 },
+            mes: { x: 181, y: 30 },
+            año: { x: 188, y: 30 }
         },
-        horaSuperior: { x: 173, y: 31 },
+        horaSuperior: { x: 178, y: 35 },
         fechaInferior: {
-            dia: { x: 163, y: 48 },
-            mes: { x: 173, y: 48 },
-            año: { x: 180, y: 48 }
+            dia: { x: 174, y: 47 },
+            mes: { x: 181, y: 47 },
+            año: { x: 188, y: 47 }
         },
-        horaInferior: { x: 170, y: 53 },
+        horaInferior: { x: 179, y: 51 },
 
         // === NÚMERO DE DOCUMENTO ===
         documentNumber: { x: 270, y: 47 }
@@ -200,6 +201,17 @@ export class TemplatePdfService {
     }
 
     /**
+     * 🎯 ESTILO PARA CHECKBOXES - MÁS PEQUEÑO PARA QUE QUEPA
+     * @private
+     */
+    setCheckboxStyle() {
+        // CHECKBOXES MÁS PEQUEÑOS PERO MISMO COLOR Y FUENTE
+        this.doc.setFont('times', 'bold');           // Times Bold consistente
+        this.doc.setFontSize(9);                     // 🔧 TAMAÑO REDUCIDO para checkboxes
+        this.doc.setTextColor(25, 25, 112);          // AZUL MARINO consistente
+    }
+
+    /**
      * Dibuja los datos del formulario sobre la plantilla
      * @private
      * @param {Object} formData - Datos del formulario
@@ -231,14 +243,17 @@ export class TemplatePdfService {
             this.doc.text(formData.responsableFacturar, coords.responsableFacturar.x, coords.responsableFacturar.y);
         }
 
-        // === TIEMPO DE ENTREGA (CHECKBOXES EN AZUL MARINO) ===
+        // === TIEMPO DE ENTREGA (CHECKBOXES MÁS PEQUEÑOS) ===
         if (formData.tiempoEntregaPor) {
-            // 🎯 Mantener el mismo estilo azul marino para checkboxes
+            // 🎯 Usar estilo específico para checkboxes (más pequeño)
+            this.setCheckboxStyle();
             if (formData.tiempoEntregaPor === 'cliente') {
                 this.doc.text('X', coords.checkboxCliente.x, coords.checkboxCliente.y);
             } else if (formData.tiempoEntregaPor === 'industrias') {
                 this.doc.text('X', coords.checkboxIndustrias.x, coords.checkboxIndustrias.y);
             }
+            // Volver al estilo normal
+            this.setUnifiedStyle(12);
         }
 
         // Nombre de quien sugiere el tiempo
@@ -259,7 +274,9 @@ export class TemplatePdfService {
             this.doc.text(formData.horaFinal, coords.horaFinal.x, coords.horaFinal.y);
         }
 
-        // === CHECKBOXES DE ASPECTOS (TODOS EN AZUL MARINO) ===
+        // === CHECKBOXES DE ASPECTOS (MÁS PEQUEÑOS PARA QUE QUEPAN) ===
+        this.setCheckboxStyle(); // 🎯 Activar estilo pequeño para checkboxes
+        
         const aspectosFields = [
             'excesosGrasas', 'excesosOxidacion', 'excesosCalamina', 'pintura',
             'recubrimientoBuque', 'stickers', 'soldaduraMalEscoriada', 'drenaje'
@@ -277,19 +294,29 @@ export class TemplatePdfService {
                 }
             }
         });
+        
+        // Volver al estilo normal después de los checkboxes
+        this.setUnifiedStyle(12);
 
-        // === RECEPCIÓN/ENTREGA (EN AZUL MARINO) ===
+        // === RECEPCIÓN/ENTREGA (CHECKBOX MÁS PEQUEÑO) ===
         if (formData.recepcionEntrega) {
+            this.setCheckboxStyle(); // 🎯 Usar estilo pequeño para checkbox
             const isRecepcion = formData.recepcionEntrega === 'R';
             const coordToUse = isRecepcion ? coords.recepcionR : coords.recepcionE;
             this.doc.text('X', coordToUse.x, coordToUse.y);
+            // Volver al estilo normal
+            this.setUnifiedStyle(12);
         }
 
         // === INFORMACIÓN DEL PRODUCTO ===
+        // Campo LÍNEA con letra más pequeña
         if (formData.linea) {
+            this.setUnifiedStyle(9); // 🔧 TAMAÑO REDUCIDO solo para línea
             this.doc.text(formData.linea, coords.linea.x, coords.linea.y);
+            this.setUnifiedStyle(12); // Volver al tamaño normal
         }
 
+        // Resto de campos con tamaño normal
         if (formData.procesoRef) {
             this.doc.text(formData.procesoRef, coords.procesoRef.x, coords.procesoRef.y);
         }
