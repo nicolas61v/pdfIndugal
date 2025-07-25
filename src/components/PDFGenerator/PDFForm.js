@@ -31,11 +31,11 @@ const PDFForm = ({
 
   const handleMainSubmit = (e) => {
     e.preventDefault();
-    if (validationInput.toLowerCase() === 'caliente') {
+    if (validationInput.toLowerCase() === 'frio') {
       onGenerateMain();
       setValidationInput('');
     } else {
-      alert('Por favor escribe "CALIENTE" para confirmar que eres consciente del formulario que estás llenando');
+      alert('Por favor escribe "FRIO" para confirmar que eres consciente del formulario que estás llenando');
     }
   };
 
@@ -359,7 +359,7 @@ const PDFForm = ({
 
         <div>
           <label className="block text-lg font-medium text-slate-300 mb-2">
-            Escribe "CALIENTE" para confirmar generación del PDF principal:
+            Escribe "FRIO" para confirmar generación del PDF principal:
           </label>
           <input
             className={inputBaseClass}
