@@ -729,13 +729,22 @@ export class PDFService {
       'COPIA - PRODUCCIÓN',
       'COPIA - ARCHIVO'
     ];
-
+  
     for (const title of footerTitles) {
+      // Crear un nuevo documento para cada copia
       this.initDocument();
+      
+      // Dibujar la página completa
       await this.drawCompletePage(formData, title);
-      copies.push(this.doc.output('blob'));
+      
+      // Guardar la copia actual
+      const pdfBlob = this.doc.output('blob');
+      copies.push(pdfBlob);
+      
+      // Limpiar el documento actual
+      this.doc = null;
     }
-
+  
     return copies;
   }
 
@@ -794,21 +803,38 @@ export class PDFService {
    */
   async generatePDF(formData = {}) {
     try {
+      // Obtener las copias
       const copies = await this.generateMultipleCopies(formData);
+      
+      // Crear el documento final con la primera copia
+      const firstCopyContent = await copies[0].arrayBuffer();
       const finalDoc = new jsPDF(PDFService.DOC_CONFIG);
-
-      for (let i = 0; i < copies.length; i++) {
-        if (i > 0) finalDoc.addPage();
-        const pageContent = await this.loadPDFBlob(copies[i]);
-        finalDoc.addPage(pageContent);
+      finalDoc.setPage(1);
+      finalDoc.addFileToVFS('copy1.pdf', firstCopyContent);
+      finalDoc.addPage();
+  
+      // Agregar el resto de las copias
+      for (let i = 1; i < copies.length; i++) {
+        const copyContent = await copies[i].arrayBuffer();
+        finalDoc.addPage();
+        finalDoc.addFileToVFS(`copy${i+1}.pdf`, copyContent);
       }
-
+  
+      // Verificar el número de páginas
+      const pageCount = finalDoc.getNumberOfPages();
+      console.log('Número de páginas generadas:', pageCount);
+      
+      if (pageCount !== copies.length) {
+        console.error(`Error: Se esperaban ${copies.length} páginas pero se generaron ${pageCount}`);
+      }
+  
       return finalDoc;
     } catch (error) {
       console.error('Error generando PDF:', error);
       throw error;
     }
   }
+
 
   /**
    * Guarda el PDF con el nombre especificado
