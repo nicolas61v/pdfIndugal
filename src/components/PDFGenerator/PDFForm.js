@@ -82,6 +82,7 @@ const PDFForm = ({
                 name="responsableTrae"
                 value={formData.responsableTrae}
                 onChange={onChange}
+                placeholder="Nombre del responsable"
               />
             </div>
             <div>
@@ -93,6 +94,7 @@ const PDFForm = ({
                 name="facturarA"
                 value={formData.facturarA}
                 onChange={onChange}
+                placeholder="Nombre o empresa para facturación"
               />
             </div>
           </div>
@@ -106,6 +108,7 @@ const PDFForm = ({
               name="responsableFacturar"
               value={formData.responsableFacturar}
               onChange={onChange}
+              placeholder="Nombre de quien ordenó la facturación"
             />
           </div>
         </div>
@@ -306,6 +309,7 @@ const PDFForm = ({
             name="otros"
             value={formData.otros}
             onChange={onChange}
+            placeholder="Especificar otros aspectos a considerar..."
           />
         </div>
       </div>
@@ -351,23 +355,36 @@ const PDFForm = ({
                     <label className="block text-sm font-medium text-slate-300 mb-2">
                       Línea
                     </label>
-                    <input
+                    <select
                       className={inputBaseClass}
                       value={producto.linea || ''}
                       onChange={(e) => onUpdateProduct(index, 'linea', e.target.value)}
-                      placeholder="Línea del producto"
-                    />
+                    >
+                      <option value="">Seleccionar línea...</option>
+                      <option value="Tam">Tam</option>
+                      <option value="Est">Est</option>
+                      <option value="Esp">Esp</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Proceso Ref.
+                      Proceso
                     </label>
-                    <input
+                    <select
                       className={inputBaseClass}
                       value={producto.procesoRef || ''}
                       onChange={(e) => onUpdateProduct(index, 'procesoRef', e.target.value)}
-                      placeholder="Proceso de referencia"
-                    />
+                    >
+                      <option value="">Seleccionar proceso...</option>
+                      <option value="Galvanizado">Galvanizado</option>
+                      <option value="Tropicalizado">Tropicalizado</option>
+                      <option value="Z.Negro">Z.Negro</option>
+                      <option value="V.Oliva">V.Oliva</option>
+                      <option value="Cobrizado">Cobrizado</option>
+                      <option value="Niquelado">Niquelado</option>
+                      <option value="Estaño">Estaño</option>
+                      <option value="Decapado">Decapado</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -377,7 +394,7 @@ const PDFForm = ({
                       className={inputBaseClass}
                       value={producto.codigoRef || ''}
                       onChange={(e) => onUpdateProduct(index, 'codigoRef', e.target.value)}
-                      placeholder="Código de referencia"
+                      placeholder="Ej: ABC-123, REF-456"
                     />
                   </div>
                 </div>
