@@ -83,8 +83,8 @@ export class TemplatePdfService {
         recepcionE: { x: 143, y: 60 },
 
         // === INFORMACIÓN DEL PRODUCTO ===
-        linea: { x: 19, y: 71 },
-        procesoRef: { x: 34, y: 71 },
+        linea: { x: 21, y: 71 },
+        procesoRef: { x: 33, y: 71 },
         codigoRef: { x: 54, y: 71 },
         descripcion: { x: 65, y: 71 },
         
@@ -374,28 +374,35 @@ export class TemplatePdfService {
 
         // === INFORMACIÓN DE PRODUCTOS MÚLTIPLES EN FILAS ===
         if (formData.productos && formData.productos.length > 0) {
-            const espaciadoEntreProductos = 5; // 5px entre cada producto
+            const espaciadoEntreProductos = 5; // 5px entre cada producto para salto de línea
+            const maxProductosVisibles = 10; // Máximo de productos que caben en el PDF
+            const maxWidthDescripcion = 32; // Ancho máximo para descripción en mm
             
-            formData.productos.forEach((producto, index) => {
+            // Limitar productos mostrados para evitar sobreescritura
+            const productosAMostrar = formData.productos.slice(0, maxProductosVisibles);
+            
+            productosAMostrar.forEach((producto, index) => {
                 const offsetY = index * espaciadoEntreProductos; // Desplazamiento vertical para cada producto
                 
-                // Campo LÍNEA con letra más pequeña
+                // Campo LÍNEA
                 if (producto.linea) {
-                    this.setUnifiedStyle(9); // 🔧 TAMAÑO REDUCIDO solo para línea
+                    this.setUnifiedStyle(11); // 🔧 TAMAÑO LÍNEA: Cambia este número (9=pequeño, 12=normal, 14=grande)
                     this.doc.text(producto.linea, coords.linea.x, coords.linea.y + offsetY);
-                    this.setUnifiedStyle(12); // Volver al tamaño normal
                 }
 
-                // Resto de campos con tamaño normal
+                // Campo PROCESO
                 if (producto.procesoRef) {
+                    this.setUnifiedStyle(10); // 🔧 TAMAÑO PROCESO: Cambia este número 
                     this.doc.text(producto.procesoRef, coords.procesoRef.x, coords.procesoRef.y + offsetY);
                 }
 
+                // Campo CÓDIGO
                 if (producto.codigoRef) {
+                    this.setUnifiedStyle(10); // 🔧 TAMAÑO CÓDIGO: Cambia este número
                     this.doc.text(producto.codigoRef, coords.codigoRef.x, coords.codigoRef.y + offsetY);
                 }
 
-                // Descripción con manejo de texto en una sola línea
+                // Descripción con manejo de texto controlado y truncamiento inteligente
                 if (producto.descripcion) {
                     // 🔧 LIMPIAR saltos de línea para mantener orden
                     const descripcionLimpia = producto.descripcion
@@ -404,15 +411,20 @@ export class TemplatePdfService {
                         .replace(/\s+/g, ' ') // Reemplazar múltiples espacios con uno solo
                         .trim();              // Quitar espacios al inicio y final
                     
-                    // Mostrar en una sola línea, truncar si es muy largo
-                    const maxWidth = 140;
-                    const textoFinal = this.doc.getTextDimensions(descripcionLimpia).w > maxWidth 
-                        ? descripcionLimpia.substring(0, 100) + '...' 
+                    // 📏 CALCULAR LÍMITE REAL basado en el ancho disponible
+                    const anchoDisponible = maxWidthDescripcion; // mm disponibles
+                    const caracteresPorMM = 2.5; // Aproximado: caracteres que caben por mm
+                    const maxCaracteres = Math.floor(anchoDisponible * caracteresPorMM);
+                    
+                    // Truncar si excede el límite
+                    const textoFinal = descripcionLimpia.length > maxCaracteres 
+                        ? descripcionLimpia.substring(0, maxCaracteres - 3) + '...' 
                         : descripcionLimpia;
                     
                     this.doc.text(textoFinal, coords.descripcion.x, coords.descripcion.y + offsetY);
                 }
             });
+            
         }
 
         // Otros aspectos
