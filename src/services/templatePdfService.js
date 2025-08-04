@@ -15,14 +15,14 @@ export class TemplatePdfService {
 
     /** @type {Array} Plantillas de las 4 copias principales */
     static MAIN_TEMPLATES = [
-        { file: 'copiaBlanca.png', name: 'ORIGINAL - CLIENTE' },
-        { file: 'copiaVerde.png', name: 'COPIA - CONTABILIDAD' },
-        { file: 'copiaRosa.png', name: 'COPIA - PRODUCCIÓN' },
-        { file: 'copiaAmarilla.png', name: 'COPIA - ARCHIVO' }
+        { file: 'copiaCliente.jpg', name: 'ORIGINAL - CLIENTE' },
+        { file: 'copiaUno.jpg', name: 'COPIA - CONTABILIDAD' },
+        { file: 'copiaDos.jpg', name: 'COPIA - PRODUCCIÓN' },
+        { file: 'copiaTres.jpg', name: 'COPIA - ARCHIVO' }
     ];
 
     /** @type {string} Plantilla de la guía manual */
-    static GUIDE_TEMPLATE = 'copiaTexto.png';
+    static GUIDE_TEMPLATE = 'copiaGuia.jpg';
 
     /** @type {Object} Coordenadas configurables - AQUÍ AJUSTAS LAS POSICIONES */
     static COORDINATES = {
