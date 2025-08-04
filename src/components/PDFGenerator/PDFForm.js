@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Loader2, FileText, BookOpen } from 'lucide-react';
+import { Loader2, FileText, BookOpen, Plus, Trash2 } from 'lucide-react';
 
 const PDFForm = ({ 
   formData, 
@@ -10,7 +10,10 @@ const PDFForm = ({
   onGenerateMain,
   onGenerateGuide, 
   isLoading, 
-  isLoadingGuide 
+  isLoadingGuide,
+  onAddProduct,
+  onRemoveProduct,
+  onUpdateProduct 
 }) => {
   const [validationInput, setValidationInput] = useState('');
   
@@ -199,19 +202,31 @@ const PDFForm = ({
         </div>
 
         <div>
-          <label className="block text-lg font-medium text-slate-300 mb-2">
-            Recepción/Entrega
+          <label className="block text-lg font-medium text-slate-300 mb-4">
+            Tipo de Operación
           </label>
-          <select
-            className={inputBaseClass}
-            name="recepcionEntrega"
-            value={formData.recepcionEntrega}
-            onChange={onChange}
-          >
-            <option value="">Seleccione...</option>
-            <option value="R">Recepción (R)</option>
-            <option value="E">Entrega (E)</option>
-          </select>
+          <div className="flex gap-8">
+            <label className="flex items-center space-x-4 p-4 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors cursor-pointer">
+              <input
+                type="checkbox"
+                name="esRecepcion"
+                checked={formData.esRecepcion || false}
+                onChange={onChange}
+                className="w-6 h-6 rounded border-slate-600 text-blue-500 focus:ring-offset-slate-800 focus:ring-blue-500"
+              />
+              <span className="text-lg text-slate-300">Recepción (R)</span>
+            </label>
+            <label className="flex items-center space-x-4 p-4 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors cursor-pointer">
+              <input
+                type="checkbox"
+                name="esEntrega"
+                checked={formData.esEntrega || false}
+                onChange={onChange}
+                className="w-6 h-6 rounded border-slate-600 text-blue-500 focus:ring-offset-slate-800 focus:ring-blue-500"
+              />
+              <span className="text-lg text-slate-300">Entrega (E)</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -295,60 +310,99 @@ const PDFForm = ({
         </div>
       </div>
 
-      {/* Información del producto */}
+      {/* Información de Productos */}
       <div className="space-y-8 bg-slate-800/30 p-8 rounded-lg">
-        <h3 className="text-2xl font-bold text-blue-400 border-b border-slate-700 pb-3">
-          Información del Producto
-        </h3>
-
-        <div className="grid grid-cols-3 gap-6">
-          <div>
-            <label className="block text-lg font-medium text-slate-300 mb-2">
-              Línea
-            </label>
-            <input
-              className={inputBaseClass}
-              name="linea"
-              value={formData.linea}
-              onChange={onChange}
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-slate-300 mb-2">
-              Proceso Ref.
-            </label>
-            <input
-              className={inputBaseClass}
-              name="procesoRef"
-              value={formData.procesoRef}
-              onChange={onChange}
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-slate-300 mb-2">
-              Código Ref.
-            </label>
-            <input
-              className={inputBaseClass}
-              name="codigoRef"
-              value={formData.codigoRef}
-              onChange={onChange}
-            />
-          </div>
+        <div className="flex items-center justify-between">
+          <h3 className="text-2xl font-bold text-blue-400 border-b border-slate-700 pb-3">
+            Información de Productos ({formData.productos ? formData.productos.length : 0})
+          </h3>
+          <button
+            type="button"
+            onClick={onAddProduct}
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors"
+          >
+            <Plus className="h-5 w-5" />
+            <span>Agregar Producto</span>
+          </button>
         </div>
 
-        <div>
-          <label className="block text-lg font-medium text-slate-300 mb-2">
-            Descripción del producto y observaciones
-          </label>
-          <textarea
-            className={`${inputBaseClass} min-h-[150px]`}
-            name="descripcion"
-            value={formData.descripcion}
-            onChange={onChange}
-            rows="4"
-          />
-        </div>
+        {formData.productos && formData.productos.length > 0 ? (
+          <div className="space-y-6">
+            {formData.productos.map((producto, index) => (
+              <div key={index} className="bg-slate-900/50 p-6 rounded-lg border border-slate-700">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-semibold text-slate-200">
+                    Producto #{index + 1}
+                  </h4>
+                  {formData.productos.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => onRemoveProduct(index)}
+                      className="flex items-center space-x-2 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-500 transition-colors text-sm"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span>Eliminar</span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Línea
+                    </label>
+                    <input
+                      className={inputBaseClass}
+                      value={producto.linea || ''}
+                      onChange={(e) => onUpdateProduct(index, 'linea', e.target.value)}
+                      placeholder="Línea del producto"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Proceso Ref.
+                    </label>
+                    <input
+                      className={inputBaseClass}
+                      value={producto.procesoRef || ''}
+                      onChange={(e) => onUpdateProduct(index, 'procesoRef', e.target.value)}
+                      placeholder="Proceso de referencia"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Código Ref.
+                    </label>
+                    <input
+                      className={inputBaseClass}
+                      value={producto.codigoRef || ''}
+                      onChange={(e) => onUpdateProduct(index, 'codigoRef', e.target.value)}
+                      placeholder="Código de referencia"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Descripción del producto y observaciones
+                  </label>
+                  <input
+                    className={inputBaseClass}
+                    value={producto.descripcion || ''}
+                    onChange={(e) => onUpdateProduct(index, 'descripcion', e.target.value)}
+                    placeholder="Describe el producto, características, observaciones..."
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-slate-400">
+            <FileText className="h-16 w-16 mx-auto mb-4 opacity-50" />
+            <p className="text-lg">No hay productos agregados</p>
+            <p className="text-sm">Haz clic en "Agregar Producto" para comenzar</p>
+          </div>
+        )}
       </div>
 
       {/* Sección de validación para PDF principal */}

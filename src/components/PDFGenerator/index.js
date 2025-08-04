@@ -17,7 +17,10 @@ const PDFGenerator = () => {
     handleFormChange,
     generateMainPDF,
     generateGuidePDF,
-    resetForm
+    resetForm,
+    addProduct,
+    removeProduct,
+    updateProduct
   } = usePDFForm();
 
   return (
@@ -112,6 +115,9 @@ const PDFGenerator = () => {
               }}
               isLoading={isLoading}
               isLoadingGuide={isLoadingGuide}
+              onAddProduct={addProduct}
+              onRemoveProduct={removeProduct}
+              onUpdateProduct={updateProduct}
             />
           </div>
 

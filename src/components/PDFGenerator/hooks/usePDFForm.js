@@ -27,13 +27,16 @@ export const usePDFForm = () => {
     horaSuperior: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
     fechaInferior: '',
     horaInferior: '',
-    recepcionEntrega: 'R',
+    esRecepcion: true,
+    esEntrega: false,
     tiempoEntregaPor: '',
     nombreTiempoEntrega: '',
-    descripcion: '',
-    linea: '',
-    procesoRef: '',
-    codigoRef: '',
+    productos: [{
+      descripcion: '',
+      linea: '',
+      procesoRef: '',
+      codigoRef: ''
+    }],
     excesosGrasas: false,
     excesosOxidacion: false,
     excesosCalamina: false,
@@ -89,6 +92,35 @@ export const usePDFForm = () => {
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  // Funciones para manejar productos múltiples
+  const addProduct = () => {
+    setFormData(prev => ({
+      ...prev,
+      productos: [...prev.productos, {
+        descripcion: '',
+        linea: '',
+        procesoRef: '',
+        codigoRef: ''
+      }]
+    }));
+  };
+
+  const removeProduct = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      productos: prev.productos.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateProduct = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      productos: prev.productos.map((producto, i) => 
+        i === index ? { ...producto, [field]: value } : producto
+      )
     }));
   };
 
@@ -210,13 +242,16 @@ export const usePDFForm = () => {
       horaSuperior: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
       fechaInferior: '',
       horaInferior: '',
-      recepcionEntrega: 'R',
+      esRecepcion: true,
+      esEntrega: false,
       tiempoEntregaPor: '',
       nombreTiempoEntrega: '',
-      descripcion: '',
-      linea: '',
-      procesoRef: '',
-      codigoRef: '',
+      productos: [{
+        descripcion: '',
+        linea: '',
+        procesoRef: '',
+        codigoRef: ''
+      }],
       excesosGrasas: false,
       excesosOxidacion: false,
       excesosCalamina: false,
@@ -266,6 +301,9 @@ export const usePDFForm = () => {
     generateMainPDF,
     generateGuidePDF,
     resetForm,
+    addProduct,
+    removeProduct,
+    updateProduct,
     testFirebaseConnection, // Función adicional para debugging
     documentNumber // Exponer el número actual para debugging
   };
