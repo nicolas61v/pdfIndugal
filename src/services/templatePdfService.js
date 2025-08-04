@@ -89,9 +89,9 @@ export class TemplatePdfService {
         // === NÚMEROS DE DOCUMENTO ADICIONALES (3 POR CADA COPIA) ===
         // Altura del medio aproximada (y: 105)
         numerosAdicionales: {
-            izquierda: { x: 80, y: 105 },    // Posición izquierda
-            centro: { x: 150, y: 105 },      // Posición centro  
-            derecha: { x: 220, y: 105 }      // Posición derecha
+            izquierda: { x: 85, y: 155 },    // Posición izquierda
+            centro: { x: 175, y: 155 },      // Posición centro  
+            derecha: { x: 265, y: 155 }      // Posición derecha
         }
     };
 
