@@ -603,7 +603,7 @@ const PDFForm = ({
             ) : (
               <>
                 <FileText className="h-6 w-6" />
-                <span>Generar PDF Principal (4 Copias con Datos)</span>
+                <span>Generar PDF Principal (5 Hojas: 4 Copias + Guía)</span>
               </>
             )}
           </button>
@@ -647,10 +647,10 @@ const PDFForm = ({
             📋 Instrucciones de Impresión:
           </h4>
           <ol className="list-decimal list-inside space-y-2 text-slate-300">
-            <li>Genera y imprime el <strong>PDF Principal</strong> → Obtienes 4 hojas con datos</li>
-            <li>Toma cualquiera de las 4 hojas impresas</li>
-            <li>Voltea la hoja y ponla de nuevo en la impresora</li>
-            <li>Genera e imprime la <strong>Guía Manual</strong> → Se imprime en el reverso</li>
+            <li>Genera y imprime el <strong>PDF Principal</strong> → Obtienes 5 hojas (4 copias con datos + 1 guía en 2° lugar)</li>
+            <li>La hoja de GUÍA ya está incluida en la posición 2 del PDF principal</li>
+            <li><span className="text-yellow-400">Nota:</span> Ya no necesitas generar la Guía Manual por separado</li>
+            <li>El orden de impresión será: Cliente → Guía → Producción → Facturación → Consecutiva</li>
           </ol>
         </div>
       </div>

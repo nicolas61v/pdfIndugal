@@ -628,33 +628,52 @@ export class TemplatePdfService {
     }
 
     /**
-     * Genera el PDF principal con las 4 copias optimizadas
+     * Genera el PDF principal con las 5 hojas (4 copias + GUÍA en segundo lugar)
      * @async
      * @param {Object} formData - Datos del formulario
-     * @returns {Promise<jsPDF>} Documento PDF con las 4 copias
+     * @returns {Promise<jsPDF>} Documento PDF con las 5 hojas
      */
     async generateMainPDF(formData = {}) {
         try {
-            console.log('🚀 Iniciando generación de PDF con estilo UNIFICADO azul marino...');
+            console.log('🚀 Iniciando generación de PDF con 5 HOJAS (4 copias + GUÍA en segundo lugar)...');
             this.initDocument();
 
-            for (let i = 0; i < TemplatePdfService.MAIN_TEMPLATES.length; i++) {
-                if (i > 0) this.doc.addPage();
+            // ORDEN: CLIENTE -> GUÍA -> PRODUCCIÓN -> FACTURACIÓN -> CONSECUTIVA
+            const pageOrder = [
+                { type: 'main', index: 0, name: 'CLIENTE' },     // Copia 1: CLIENTE
+                { type: 'guide', name: 'GUÍA' },                 // Copia 2: GUÍA (NUEVA POSICIÓN)
+                { type: 'main', index: 1, name: 'PRODUCCIÓN' },  // Copia 3: PRODUCCIÓN  
+                { type: 'main', index: 2, name: 'FACTURACIÓN' }, // Copia 4: FACTURACIÓN
+                { type: 'main', index: 3, name: 'CONSECUTIVA' }  // Copia 5: CONSECUTIVA
+            ];
 
-                const template = TemplatePdfService.MAIN_TEMPLATES[i];
-                console.log(`🎨 Procesando ${template.name} con estilo unificado...`);
+            for (let pageIndex = 0; pageIndex < pageOrder.length; pageIndex++) {
+                if (pageIndex > 0) this.doc.addPage();
 
-                // Agregar fondo de plantilla optimizada
-                await this.addTemplateBackground(template.file);
+                const currentPage = pageOrder[pageIndex];
+                console.log(`🎨 Procesando página ${pageIndex + 1}/5: ${currentPage.name}...`);
 
-                // Agregar datos del formulario con estilo unificado y pasar índice de copia
-                this.drawFormData(formData, i);
+                if (currentPage.type === 'main') {
+                    // Página de copia con datos
+                    const template = TemplatePdfService.MAIN_TEMPLATES[currentPage.index];
+                    
+                    // Agregar fondo de plantilla optimizada
+                    await this.addTemplateBackground(template.file);
+
+                    // Agregar datos del formulario
+                    this.drawFormData(formData, currentPage.index);
+                    
+                } else if (currentPage.type === 'guide') {
+                    // Página de GUÍA (sin datos del formulario)
+                    await this.addTemplateBackground(TemplatePdfService.GUIDE_TEMPLATE);
+                    console.log('📋 Página GUÍA agregada en segunda posición');
+                }
             }
 
-            console.log('✅ PDF con estilo UNIFICADO generado exitosamente');
+            console.log('✅ PDF con 5 HOJAS generado exitosamente (CLIENTE -> GUÍA -> PRODUCCIÓN -> FACTURACIÓN -> CONSECUTIVA)');
             return this.doc;
         } catch (error) {
-            console.error('❌ Error generando PDF con estilo unificado:', error);
+            console.error('❌ Error generando PDF con 5 hojas:', error);
             throw error;
         }
     }
