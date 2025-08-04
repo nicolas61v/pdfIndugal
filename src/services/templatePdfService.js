@@ -15,10 +15,30 @@ export class TemplatePdfService {
 
     /** @type {Array} Plantillas de las 4 copias principales */
     static MAIN_TEMPLATES = [
-        { file: 'copiaCliente.jpg', name: 'ORIGINAL - CLIENTE' },
-        { file: 'copiaUno.jpg', name: 'COPIA - CONTABILIDAD' },
-        { file: 'copiaDos.jpg', name: 'COPIA - PRODUCCIÓN' },
-        { file: 'copiaTres.jpg', name: 'COPIA - ARCHIVO' }
+        { 
+            file: 'copiaCliente.jpg', 
+            name: 'ORIGINAL - CLIENTE',
+            sideText: 'ORIGINAL CLIENTE',
+            color: [255, 0, 0] // ROJO
+        },
+        { 
+            file: 'copiaUno.jpg', 
+            name: 'COPIA - PRODUCCIÓN',
+            sideText: 'COPIA VERDE - PRODUCCION',
+            color: [255, 0, 0] // ROJO (todos en rojo)
+        },
+        { 
+            file: 'copiaDos.jpg', 
+            name: 'COPIA - FACTURACIÓN',
+            sideText: 'COPIA AMARILLA - FACTURACION',
+            color: [255, 0, 0] // ROJO (todos en rojo)
+        },
+        { 
+            file: 'copiaTres.jpg', 
+            name: 'COPIA - CONSECUTIVA',
+            sideText: 'COPIA ROSA - CONSECUTIVA',
+            color: [255, 0, 0] // ROJO (todos en rojo)
+        }
     ];
 
     /** @type {string} Plantilla de la guía manual */
@@ -92,6 +112,14 @@ export class TemplatePdfService {
             izquierda: { x: 85, y: 155 },    // Posición izquierda
             centro: { x: 175, y: 155 },      // Posición centro  
             derecha: { x: 265, y: 155 }      // Posición derecha
+        },
+
+        // === TEXTO LATERAL ROTADO ===
+        textoLateral: {
+            x: 7,       // Posición X 
+            y: 125,     // Posición Y centrada verticalmente
+            fontSize: 12,   // Tamaño de fuente
+            rotation: 90    // ⚠️ EN GRADOS: 90° para texto vertical (según documentación oficial)
         }
     };
 
@@ -217,6 +245,27 @@ export class TemplatePdfService {
         this.doc.setFont('times', 'bold');           // Times Bold consistente
         this.doc.setFontSize(9);                     // 🔧 TAMAÑO REDUCIDO para checkboxes
         this.doc.setTextColor(25, 25, 112);          // AZUL MARINO consistente
+    }
+
+    /**
+     * 🎯 DIBUJA TEXTO ROTADO VERTICALMENTE EN EL LADO IZQUIERDO
+     * @private
+     * @param {string} text - Texto a mostrar
+     * @param {Array} color - Color RGB [r, g, b]
+     */
+    drawSideText(text, color) {
+        const coords = TemplatePdfService.COORDINATES.textoLateral;
+        
+        // Configurar estilo para texto lateral
+        this.doc.setFont('times', 'bold');
+        this.doc.setFontSize(coords.fontSize);
+        this.doc.setTextColor(color[0], color[1], color[2]);
+        
+        // ✅ SINTAXIS OFICIAL DE jsPDF (según documentación)
+        this.doc.text(text, coords.x, coords.y, { angle: coords.rotation });
+        console.log(`✅ Texto rotado agregado con sintaxis oficial de jsPDF`);
+        
+        console.log(`📝 Texto lateral agregado: "${text}" en color RGB(${color.join(', ')}) en posición (${coords.x}, ${coords.y})`);
     }
 
     /**
@@ -448,6 +497,16 @@ export class TemplatePdfService {
             
             // Volver al tamaño estándar
             this.setUnifiedStyle(12);
+        }
+
+        // 🎯 AGREGAR TEXTO LATERAL ROTADO SEGÚN EL TIPO DE COPIA
+        const template = TemplatePdfService.MAIN_TEMPLATES[copyIndex];
+        console.log(`🔍 DEBUG: copyIndex=${copyIndex}, template=`, template);
+        if (template) {
+            console.log(`🎯 Agregando texto lateral: "${template.sideText}"`);
+            this.drawSideText(template.sideText, template.color);
+        } else {
+            console.log('❌ No se encontró template para copyIndex:', copyIndex);
         }
 
         console.log('✅ Todos los elementos dibujados en AZUL MARINO unificado');
