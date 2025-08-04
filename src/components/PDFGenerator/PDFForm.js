@@ -17,6 +17,23 @@ const PDFForm = ({
 }) => {
   const [validationInput, setValidationInput] = useState('');
   
+  // Función para convertir formato AM/PM de vuelta a 24h para el input time
+  const convertToTimeInput = (time12) => {
+    if (!time12 || !time12.includes(' ')) return time12;
+    
+    const [time, period] = time12.split(' ');
+    const [hours, minutes] = time.split(':');
+    let hour = parseInt(hours, 10);
+    
+    if (period === 'PM' && hour !== 12) {
+      hour += 12;
+    } else if (period === 'AM' && hour === 12) {
+      hour = 0;
+    }
+    
+    return `${hour.toString().padStart(2, '0')}:${minutes}`;
+  };
+  
   const aspectos = [
     { name: 'excesosGrasas', label: 'Exceso de Grasas' },
     { name: 'excesosOxidacion', label: 'Exceso de oxidación' },
@@ -172,13 +189,20 @@ const PDFForm = ({
                 value={formData.fechaSuperior}
                 onChange={onChange}
               />
-              <input
-                type="time"
-                className={inputBaseClass}
-                name="horaSuperior"
-                value={formData.horaSuperior}
-                onChange={onChange}
-              />
+              <div className="space-y-2">
+                <input
+                  type="time"
+                  className={inputBaseClass}
+                  name="horaSuperior"
+                  value={formData.horaSuperior ? convertToTimeInput(formData.horaSuperior) : ''}
+                  onChange={onChange}
+                />
+                {formData.horaSuperior && (
+                  <div className="text-sm text-slate-400 italic">
+                    En PDF: {formData.horaSuperior}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="space-y-4">
@@ -193,13 +217,20 @@ const PDFForm = ({
                 value={formData.fechaInferior}
                 onChange={onChange}
               />
-              <input
-                type="time"
-                className={inputBaseClass}
-                name="horaInferior"
-                value={formData.horaInferior}
-                onChange={onChange}
-              />
+              <div className="space-y-2">
+                <input
+                  type="time"
+                  className={inputBaseClass}
+                  name="horaInferior"
+                  value={formData.horaInferior ? convertToTimeInput(formData.horaInferior) : ''}
+                  onChange={onChange}
+                />
+                {formData.horaInferior && (
+                  <div className="text-sm text-slate-400 italic">
+                    En PDF: {formData.horaInferior}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -395,6 +426,115 @@ const PDFForm = ({
                       value={producto.codigoRef || ''}
                       onChange={(e) => onUpdateProduct(index, 'codigoRef', e.target.value)}
                       placeholder="Ej: ABC-123, REF-456"
+                    />
+                  </div>
+                </div>
+
+                {/* Nueva sección para campos adicionales */}
+                <div className="grid grid-cols-6 gap-3 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Documento Cliente (4 dígitos)
+                    </label>
+                    <input
+                      className={inputBaseClass}
+                      value={producto.documentoCliente || ''}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').substring(0, 4);
+                        onUpdateProduct(index, 'documentoCliente', value);
+                      }}
+                      placeholder="0000"
+                      maxLength={4}
+                      pattern="[0-9]{4}"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Unidades
+                    </label>
+                    <input
+                      className={inputBaseClass}
+                      type="number"
+                      value={producto.unidades || ''}
+                      onChange={(e) => onUpdateProduct(index, 'unidades', e.target.value)}
+                      placeholder="0"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Peso Bruto (kg)
+                    </label>
+                    <input
+                      className={inputBaseClass}
+                      type="text"
+                      value={producto.pesoBruto || ''}
+                      onChange={(e) => {
+                        let value = e.target.value;
+                        // Reemplazar comas por puntos para uniformidad
+                        value = value.replace(',', '.');
+                        // Permitir solo números, un punto decimal y máximo 2 decimales
+                        const regex = /^\d*\.?\d{0,2}$/;
+                        if (regex.test(value) || value === '') {
+                          onUpdateProduct(index, 'pesoBruto', value);
+                        }
+                      }}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Unidades Recipientes
+                    </label>
+                    <input
+                      className={inputBaseClass}
+                      type="number"
+                      value={producto.unidadesRecipientes || ''}
+                      onChange={(e) => onUpdateProduct(index, 'unidadesRecipientes', e.target.value)}
+                      placeholder="0"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Peso Recipientes (kg)
+                    </label>
+                    <input
+                      className={inputBaseClass}
+                      type="text"
+                      value={producto.pesoRecipientes || ''}
+                      onChange={(e) => {
+                        let value = e.target.value;
+                        // Reemplazar comas por puntos para uniformidad
+                        value = value.replace(',', '.');
+                        // Permitir solo números, un punto decimal y máximo 2 decimales
+                        const regex = /^\d*\.?\d{0,2}$/;
+                        if (regex.test(value) || value === '') {
+                          onUpdateProduct(index, 'pesoRecipientes', value);
+                        }
+                      }}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Peso Neto (kg)
+                    </label>
+                    <input
+                      className={inputBaseClass}
+                      type="text"
+                      value={producto.pesoNeto || ''}
+                      onChange={(e) => {
+                        let value = e.target.value;
+                        // Reemplazar comas por puntos para uniformidad
+                        value = value.replace(',', '.');
+                        // Permitir solo números, un punto decimal y máximo 2 decimales
+                        const regex = /^\d*\.?\d{0,2}$/;
+                        if (regex.test(value) || value === '') {
+                          onUpdateProduct(index, 'pesoNeto', value);
+                        }
+                      }}
+                      placeholder="0.00"
                     />
                   </div>
                 </div>

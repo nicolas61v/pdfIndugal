@@ -88,7 +88,13 @@ export class TemplatePdfService {
         codigoRef: { x: 54, y: 71 },
         descripcion: { x: 65, y: 71 },
         
-
+        // === NUEVOS CAMPOS ADICIONALES DEL PRODUCTO ===
+        documentoCliente: { x: 198, y: 71 },     // Posición exacta solicitada
+        unidades: { x: 212, y: 71 },             // 10mm a la derecha
+        pesoBruto: { x: 223, y: 71 },            // 6mm más a la derecha
+        unidadesRecipientes: { x: 233, y: 71 },  // 10mm más a la derecha
+        pesoRecipientes: { x: 240, y: 71 },      // 5mm más a la derecha
+        pesoNeto: { x: 250, y: 71 },             // 5mm más a la derecha
         // === FECHAS ===
         fechaSuperior: {
             dia: { x: 171, y: 33 },
@@ -422,6 +428,103 @@ export class TemplatePdfService {
                         : descripcionLimpia;
                     
                     this.doc.text(textoFinal, coords.descripcion.x, coords.descripcion.y + offsetY);
+                }
+
+                // === NUEVOS CAMPOS ADICIONALES ===
+                // Documento Cliente (4 dígitos)
+                if (producto.documentoCliente) {
+                    // Guardar el estado actual de la fuente
+                    const currentFont = this.doc.internal.getFont();
+                    const currentSize = this.doc.internal.getFontSize();
+                    const currentColor = this.doc.internal.getTextColor();
+                    
+                    this.setUnifiedStyle(10); // Tamaño específico para documento cliente
+                    this.doc.text(producto.documentoCliente.toString(), coords.documentoCliente.x, coords.documentoCliente.y + offsetY);
+                    
+                    // Restaurar el estado original
+                    this.doc.setFont(currentFont.fontName, currentFont.fontStyle);
+                    this.doc.setFontSize(currentSize);
+                    this.doc.setTextColor(currentColor);
+                }
+
+                // Unidades
+                if (producto.unidades) {
+                    // Guardar el estado actual de la fuente
+                    const currentFont = this.doc.internal.getFont();
+                    const currentSize = this.doc.internal.getFontSize();
+                    const currentColor = this.doc.internal.getTextColor();
+                    
+                    this.setUnifiedStyle(9); // Tamaño para unidades
+                    this.doc.text(producto.unidades.toString(), coords.unidades.x, coords.unidades.y + offsetY);
+                    
+                    // Restaurar el estado original
+                    this.doc.setFont(currentFont.fontName, currentFont.fontStyle);
+                    this.doc.setFontSize(currentSize);
+                    this.doc.setTextColor(currentColor);
+                }
+
+                // Peso Bruto
+                if (producto.pesoBruto) {
+                    // Guardar el estado actual de la fuente
+                    const currentFont = this.doc.internal.getFont();
+                    const currentSize = this.doc.internal.getFontSize();
+                    const currentColor = this.doc.internal.getTextColor();
+                    
+                    this.setUnifiedStyle(8); // Tamaño para peso bruto
+                    this.doc.text(producto.pesoBruto.toString(), coords.pesoBruto.x, coords.pesoBruto.y + offsetY);
+                    
+                    // Restaurar el estado original
+                    this.doc.setFont(currentFont.fontName, currentFont.fontStyle);
+                    this.doc.setFontSize(currentSize);
+                    this.doc.setTextColor(currentColor);
+                }
+
+                // Unidades Recipientes
+                if (producto.unidadesRecipientes) {
+                    // Guardar el estado actual de la fuente
+                    const currentFont = this.doc.internal.getFont();
+                    const currentSize = this.doc.internal.getFontSize();
+                    const currentColor = this.doc.internal.getTextColor();
+                    
+                    this.setUnifiedStyle(8); // Tamaño para unidades recipientes
+                    this.doc.text(producto.unidadesRecipientes.toString(), coords.unidadesRecipientes.x, coords.unidadesRecipientes.y + offsetY);
+                    
+                    // Restaurar el estado original
+                    this.doc.setFont(currentFont.fontName, currentFont.fontStyle);
+                    this.doc.setFontSize(currentSize);
+                    this.doc.setTextColor(currentColor);
+                }
+
+                // Peso Recipientes
+                if (producto.pesoRecipientes) {
+                    // Guardar el estado actual de la fuente
+                    const currentFont = this.doc.internal.getFont();
+                    const currentSize = this.doc.internal.getFontSize();
+                    const currentColor = this.doc.internal.getTextColor();
+                    
+                    this.setUnifiedStyle(8); // Tamaño para peso recipientes
+                    this.doc.text(producto.pesoRecipientes.toString(), coords.pesoRecipientes.x, coords.pesoRecipientes.y + offsetY);
+                    
+                    // Restaurar el estado original
+                    this.doc.setFont(currentFont.fontName, currentFont.fontStyle);
+                    this.doc.setFontSize(currentSize);
+                    this.doc.setTextColor(currentColor);
+                }
+
+                // Peso Neto
+                if (producto.pesoNeto) {
+                    // Guardar el estado actual de la fuente
+                    const currentFont = this.doc.internal.getFont();
+                    const currentSize = this.doc.internal.getFontSize();
+                    const currentColor = this.doc.internal.getTextColor();
+                    
+                    this.setUnifiedStyle(8); // Tamaño para peso neto
+                    this.doc.text(producto.pesoNeto.toString(), coords.pesoNeto.x, coords.pesoNeto.y + offsetY);
+                    
+                    // Restaurar el estado original
+                    this.doc.setFont(currentFont.fontName, currentFont.fontStyle);
+                    this.doc.setFontSize(currentSize);
+                    this.doc.setTextColor(currentColor);
                 }
             });
             

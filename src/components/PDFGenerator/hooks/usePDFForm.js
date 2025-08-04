@@ -35,7 +35,13 @@ export const usePDFForm = () => {
       descripcion: '',
       linea: '',
       procesoRef: '',
-      codigoRef: ''
+      codigoRef: '',
+      documentoCliente: '',
+      unidades: '',
+      pesoBruto: '',
+      unidadesRecipientes: '',
+      pesoRecipientes: '',
+      pesoNeto: ''
     }],
     excesosGrasas: false,
     excesosOxidacion: false,
@@ -89,10 +95,30 @@ export const usePDFForm = () => {
 
   const handleFormChange = (e) => {
     const { name, value, type, checked } = e.target;
+    
+    let processedValue = value;
+    
+    // Convertir horas a formato 12 horas con AM/PM
+    if ((name === 'horaInferior' || name === 'horaSuperior') && value) {
+      processedValue = convertTo12HourFormat(value);
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : processedValue
     }));
+  };
+
+  // Función para convertir hora de 24h a 12h con AM/PM
+  const convertTo12HourFormat = (time24) => {
+    if (!time24) return time24;
+    
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    
+    return `${hour12.toString().padStart(2, '0')}:${minutes} ${ampm}`;
   };
 
   // Funciones para manejar productos múltiples
@@ -103,7 +129,13 @@ export const usePDFForm = () => {
         descripcion: '',
         linea: '',
         procesoRef: '',
-        codigoRef: ''
+        codigoRef: '',
+        documentoCliente: '',
+        unidades: '',
+        pesoBruto: '',
+        unidadesRecipientes: '',
+        pesoRecipientes: '',
+        pesoNeto: ''
       }]
     }));
   };
@@ -250,7 +282,13 @@ export const usePDFForm = () => {
         descripcion: '',
         linea: '',
         procesoRef: '',
-        codigoRef: ''
+        codigoRef: '',
+        documentoCliente: '',
+        unidades: '',
+        pesoBruto: '',
+        unidadesRecipientes: '',
+        pesoRecipientes: '',
+        pesoNeto: ''
       }],
       excesosGrasas: false,
       excesosOxidacion: false,
