@@ -15,76 +15,84 @@ export class TemplatePdfService {
 
     /** @type {Array} Plantillas de las 4 copias principales */
     static MAIN_TEMPLATES = [
-        { file: 'copiaBlanca.png', name: 'ORIGINAL - CLIENTE' },
-        { file: 'copiaVerde.png', name: 'COPIA - CONTABILIDAD' },
-        { file: 'copiaRosa.png', name: 'COPIA - PRODUCCIÓN' },
-        { file: 'copiaAmarilla.png', name: 'COPIA - ARCHIVO' }
+        { file: 'copiaCliente.jpg', name: 'ORIGINAL - CLIENTE' },
+        { file: 'copiaUno.jpg', name: 'COPIA - CONTABILIDAD' },
+        { file: 'copiaDos.jpg', name: 'COPIA - PRODUCCIÓN' },
+        { file: 'copiaTres.jpg', name: 'COPIA - ARCHIVO' }
     ];
 
     /** @type {string} Plantilla de la guía manual */
-    static GUIDE_TEMPLATE = 'copiaTexto.png';
+    static GUIDE_TEMPLATE = 'copiaGuia.jpg';
 
     /** @type {Object} Coordenadas configurables - AQUÍ AJUSTAS LAS POSICIONES */
     static COORDINATES = {
         // === INFORMACIÓN DE EMPRESA ===
-        empresa: { x: 25, y: 29 },
-        responsableTrae: { x: 25, y: 36 },
-        facturarA: { x: 93, y: 29 },
-        responsableFacturar: { x: 98, y: 36 },
+        empresa: { x: 17, y: 32 },
+        responsableTrae: { x: 17, y: 40 },
+        facturarA: { x: 86, y: 32 },
+        responsableFacturar: { x: 89, y: 40 },
 
         // === TIEMPO DE ENTREGA ===
-        checkboxCliente: { x: 39, y: 49 },
-        checkboxIndustrias: { x: 39, y: 53 },
-        nombreTiempoEntrega: { x: 55, y: 51 },
+        checkboxCliente: { x: 33.5, y: 53 },
+        checkboxIndustrias: { x: 33.5, y: 58 },
+        nombreTiempoEntrega: { x: 50, y: 56 },
 
         // === HORARIOS ===
-        horaLlegada: { x: 134, y: 42 },
-        horaInicio: { x: 134, y: 47 },
-        horaFinal: { x: 134, y: 52 },
+        horaLlegada: { x: 132, y: 46 },
+        horaInicio: { x: 132, y: 51 },
+        horaFinal: { x: 132, y: 56 },
 
         // === ASPECTOS (CHECKBOXES) ===
         aspectos: {
-            excesosGrasas: { x: 239.5, y: 13 },
-            excesosOxidacion: { x: 239.5, y: 16 },
-            excesosCalamina: { x: 239.5, y: 19 },
-            pintura: { x: 239.5, y: 22 },
-            recubrimientoBuque: { x: 239.5, y: 25 },
-            stickers: { x: 239.5, y: 28 },
-            soldaduraMalEscoriada: { x: 239.5, y: 30.5 },
-            drenaje: { x: 239.5, y: 35 }
+            excesosGrasas: { x: 240, y: 15 },
+            excesosOxidacion: { x: 240, y: 18 },
+            excesosCalamina: { x: 240, y: 21 },
+            pintura: { x: 240, y: 24 },
+            recubrimientoBuque: { x: 240, y: 27 },
+            stickers: { x: 240, y: 30 },
+            soldaduraMalEscoriada: { x: 240, y: 32.5 },
+            drenaje: { x: 240, y: 38.5 }
         },
         aspectosNo: {
-            x: 245.5 // X para NO (todas usan la misma X)
+            x: 246 // X para NO (todas usan la misma X)
         },
-        otros: { x: 200, y: 41 },
+        otros: { x: 197, y: 46 },
 
         // === RECEPCIÓN/ENTREGA ===
-        recepcionR: { x: 134, y: 55 },
-        recepcionE: { x: 144, y: 55 },
+        recepcionR: { x: 131, y: 60 },
+        recepcionE: { x: 143, y: 60 },
 
         // === INFORMACIÓN DEL PRODUCTO ===
-        linea: { x: 24, y: 64 },
-        procesoRef: { x: 35, y: 64 },
-        codigoRef: { x: 54, y: 64 },
-        descripcion: { x: 71, y: 64 },
+        linea: { x: 19, y: 71 },
+        procesoRef: { x: 34, y: 71 },
+        codigoRef: { x: 54, y: 71 },
+        descripcion: { x: 65, y: 71 },
         
 
         // === FECHAS ===
         fechaSuperior: {
-            dia: { x: 173, y: 30 },
-            mes: { x: 181, y: 30 },
-            año: { x: 188, y: 30 }
+            dia: { x: 171, y: 33 },
+            mes: { x: 180, y: 33 },
+            año: { x: 188, y: 33 }
         },
-        horaSuperior: { x: 178, y: 35 },
+        horaSuperior: { x: 177, y: 38 },
         fechaInferior: {
-            dia: { x: 174, y: 47 },
-            mes: { x: 181, y: 47 },
-            año: { x: 188, y: 47 }
+            dia: { x: 173.5, y: 51 },
+            mes: { x: 181, y: 51 },
+            año: { x: 187, y: 51 }
         },
-        horaInferior: { x: 179, y: 51 },
+        horaInferior: { x: 179, y: 55 },
 
         // === NÚMERO DE DOCUMENTO ===
-        documentNumber: { x: 270, y: 47 }
+        documentNumber: { x: 270, y: 52 },
+        
+        // === NÚMEROS DE DOCUMENTO ADICIONALES (3 POR CADA COPIA) ===
+        // Altura del medio aproximada (y: 105)
+        numerosAdicionales: {
+            izquierda: { x: 85, y: 155 },    // Posición izquierda
+            centro: { x: 175, y: 155 },      // Posición centro  
+            derecha: { x: 265, y: 155 }      // Posición derecha
+        }
     };
 
     constructor() {
@@ -215,8 +223,9 @@ export class TemplatePdfService {
      * Dibuja los datos del formulario sobre la plantilla
      * @private
      * @param {Object} formData - Datos del formulario
+     * @param {number} copyIndex - Índice de la copia (0=cliente, 1=contabilidad, 2=producción, 3=archivo)
      */
-    drawFormData(formData) {
+    drawFormData(formData, copyIndex = 0) {
         if (!formData) return;
 
         console.log('✍️ Dibujando datos con estilo UNIFICADO azul marino');
@@ -298,38 +307,63 @@ export class TemplatePdfService {
         // Volver al estilo normal después de los checkboxes
         this.setUnifiedStyle(12);
 
-        // === RECEPCIÓN/ENTREGA (CHECKBOX MÁS PEQUEÑO) ===
-        if (formData.recepcionEntrega) {
-            this.setCheckboxStyle(); // 🎯 Usar estilo pequeño para checkbox
-            const isRecepcion = formData.recepcionEntrega === 'R';
-            const coordToUse = isRecepcion ? coords.recepcionR : coords.recepcionE;
-            this.doc.text('X', coordToUse.x, coordToUse.y);
-            // Volver al estilo normal
-            this.setUnifiedStyle(12);
+        // === RECEPCIÓN/ENTREGA (CHECKBOXES MÁS PEQUEÑOS) ===
+        this.setCheckboxStyle(); // 🎯 Usar estilo pequeño para checkboxes
+        
+        // Marcar Recepción si está seleccionada
+        if (formData.esRecepcion) {
+            this.doc.text('X', coords.recepcionR.x, coords.recepcionR.y);
         }
-
-        // === INFORMACIÓN DEL PRODUCTO ===
-        // Campo LÍNEA con letra más pequeña
-        if (formData.linea) {
-            this.setUnifiedStyle(9); // 🔧 TAMAÑO REDUCIDO solo para línea
-            this.doc.text(formData.linea, coords.linea.x, coords.linea.y);
-            this.setUnifiedStyle(12); // Volver al tamaño normal
+        
+        // Marcar Entrega si está seleccionada
+        if (formData.esEntrega) {
+            this.doc.text('X', coords.recepcionE.x, coords.recepcionE.y);
         }
+        
+        // Volver al estilo normal
+        this.setUnifiedStyle(12);
 
-        // Resto de campos con tamaño normal
-        if (formData.procesoRef) {
-            this.doc.text(formData.procesoRef, coords.procesoRef.x, coords.procesoRef.y);
-        }
+        // === INFORMACIÓN DE PRODUCTOS MÚLTIPLES EN FILAS ===
+        if (formData.productos && formData.productos.length > 0) {
+            const espaciadoEntreProductos = 5; // 5px entre cada producto
+            
+            formData.productos.forEach((producto, index) => {
+                const offsetY = index * espaciadoEntreProductos; // Desplazamiento vertical para cada producto
+                
+                // Campo LÍNEA con letra más pequeña
+                if (producto.linea) {
+                    this.setUnifiedStyle(9); // 🔧 TAMAÑO REDUCIDO solo para línea
+                    this.doc.text(producto.linea, coords.linea.x, coords.linea.y + offsetY);
+                    this.setUnifiedStyle(12); // Volver al tamaño normal
+                }
 
-        if (formData.codigoRef) {
-            this.doc.text(formData.codigoRef, coords.codigoRef.x, coords.codigoRef.y);
-        }
+                // Resto de campos con tamaño normal
+                if (producto.procesoRef) {
+                    this.doc.text(producto.procesoRef, coords.procesoRef.x, coords.procesoRef.y + offsetY);
+                }
 
-        // Descripción con manejo de texto largo
-        if (formData.descripcion) {
-            const maxWidth = 140;
-            const lines = this.doc.splitTextToSize(formData.descripcion, maxWidth);
-            this.doc.text(lines, coords.descripcion.x, coords.descripcion.y);
+                if (producto.codigoRef) {
+                    this.doc.text(producto.codigoRef, coords.codigoRef.x, coords.codigoRef.y + offsetY);
+                }
+
+                // Descripción con manejo de texto en una sola línea
+                if (producto.descripcion) {
+                    // 🔧 LIMPIAR saltos de línea para mantener orden
+                    const descripcionLimpia = producto.descripcion
+                        .replace(/\n/g, ' ')  // Reemplazar saltos de línea con espacios
+                        .replace(/\r/g, ' ')  // Reemplazar retornos de carro con espacios
+                        .replace(/\s+/g, ' ') // Reemplazar múltiples espacios con uno solo
+                        .trim();              // Quitar espacios al inicio y final
+                    
+                    // Mostrar en una sola línea, truncar si es muy largo
+                    const maxWidth = 140;
+                    const textoFinal = this.doc.getTextDimensions(descripcionLimpia).w > maxWidth 
+                        ? descripcionLimpia.substring(0, 100) + '...' 
+                        : descripcionLimpia;
+                    
+                    this.doc.text(textoFinal, coords.descripcion.x, coords.descripcion.y + offsetY);
+                }
+            });
         }
 
         // Otros aspectos
@@ -380,6 +414,38 @@ export class TemplatePdfService {
                 coords.documentNumber.y,
                 { align: 'center' }
             );
+            
+            // === NÚMEROS ADICIONALES PARA COPIAS 1, 2 Y 3 (3 NÚMEROS POR COPIA) ===
+            if (copyIndex >= 1 && copyIndex <= 3) {
+                const numerosCoords = coords.numerosAdicionales;
+                
+                // Agregar número en posición izquierda
+                this.doc.text(
+                    formData.documentNumber.toString(),
+                    numerosCoords.izquierda.x,
+                    numerosCoords.izquierda.y,
+                    { align: 'center' }
+                );
+                
+                // Agregar número en posición centro
+                this.doc.text(
+                    formData.documentNumber.toString(),
+                    numerosCoords.centro.x,
+                    numerosCoords.centro.y,
+                    { align: 'center' }
+                );
+                
+                // Agregar número en posición derecha
+                this.doc.text(
+                    formData.documentNumber.toString(),
+                    numerosCoords.derecha.x,
+                    numerosCoords.derecha.y,
+                    { align: 'center' }
+                );
+                
+                console.log(`📄 3 números adicionales agregados en copia ${copyIndex}: izq(${numerosCoords.izquierda.x},${numerosCoords.izquierda.y}), centro(${numerosCoords.centro.x},${numerosCoords.centro.y}), der(${numerosCoords.derecha.x},${numerosCoords.derecha.y})`);
+            }
+            
             // Volver al tamaño estándar
             this.setUnifiedStyle(12);
         }
@@ -407,8 +473,8 @@ export class TemplatePdfService {
                 // Agregar fondo de plantilla optimizada
                 await this.addTemplateBackground(template.file);
 
-                // Agregar datos del formulario con estilo unificado
-                this.drawFormData(formData);
+                // Agregar datos del formulario con estilo unificado y pasar índice de copia
+                this.drawFormData(formData, i);
             }
 
             console.log('✅ PDF con estilo UNIFICADO generado exitosamente');
