@@ -2,12 +2,12 @@
 'use client';
 
 import React from 'react';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import PDFForm from './PDFForm';
 import { usePDFForm } from './hooks/usePDFForm';
 import Image from 'next/image';
 
-const PDFGenerator = () => {
+const PDFGenerator = ({ onBackToSelector }) => {
   const {
     formData,
     isLoading,
@@ -32,6 +32,15 @@ const PDFGenerator = () => {
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg shadow-xl mb-8 p-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-6">
+                {onBackToSelector && (
+                  <button
+                    onClick={onBackToSelector}
+                    className="flex items-center space-x-2 bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    <span>Volver</span>
+                  </button>
+                )}
                 <div className="relative w-48 h-20">
                   <Image
                     src="/images/LOGO INDUGAL(1).png"
@@ -46,7 +55,7 @@ const PDFGenerator = () => {
                     Recepción de Producto
                   </h1>
                   <p className="text-slate-400 mt-2 text-lg">
-                    Sistema de Control y Registro de Productos
+                    Indugal-Vanizados Industriales (Frío)
                   </p>
                 </div>
               </div>
