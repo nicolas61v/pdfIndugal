@@ -107,7 +107,7 @@ export class TemplatePdfService {
             mes: { x: 181, y: 51 },
             año: { x: 187, y: 51 }
         },
-        horaInferior: { x: 179, y: 55 },
+        horaInferior: { x: 179.2, y: 55 },
 
         // === NÚMERO DE DOCUMENTO ===
         documentNumber: { x: 270, y: 52 },
