@@ -79,7 +79,7 @@ const InvoiceSelector = ({ onSelectCold }) => {
               </div>
               
               <h3 className="text-2xl font-bold text-white mb-3">
-                Indugal-Vanizados Industriales
+                Industrias y galvanizados
               </h3>
               <p className="text-blue-400 font-medium mb-4">
                 También conocido como "Frío"
@@ -115,7 +115,7 @@ const InvoiceSelector = ({ onSelectCold }) => {
               </div>
               
               <h3 className="text-2xl font-bold text-slate-300 mb-3">
-                Industrias y Galvanizados del Aburrá
+                Galvanizados Industriales del aburra
               </h3>
               <p className="text-orange-400 font-medium mb-4">
                 También conocido como "Caliente"

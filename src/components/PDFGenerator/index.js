@@ -55,7 +55,7 @@ const PDFGenerator = ({ onBackToSelector }) => {
                     Recepción de Producto
                   </h1>
                   <p className="text-slate-400 mt-2 text-lg">
-                    Indugal-Vanizados Industriales (Frío)
+                    Industrias y galvanizados (Frío)
                   </p>
                 </div>
               </div>
