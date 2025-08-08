@@ -64,17 +64,17 @@ export class TemplatePdfService {
 
         // === ASPECTOS (CHECKBOXES) ===
         aspectos: {
-            excesosGrasas: { x: 240, y: 15 },
-            excesosOxidacion: { x: 240, y: 18 },
-            excesosCalamina: { x: 240, y: 21 },
-            pintura: { x: 240, y: 24 },
-            recubrimientoBuque: { x: 240, y: 27 },
-            stickers: { x: 240, y: 30 },
-            soldaduraMalEscoriada: { x: 240, y: 32.5 },
-            drenaje: { x: 240, y: 38.5 }
+            excesosGrasas: { x: 239.5, y: 15 },
+            excesosOxidacion: { x: 239.5, y: 18 },
+            excesosCalamina: { x: 239.5, y: 21 },
+            pintura: { x: 239.5, y: 24 },
+            recubrimientoBucal: { x: 239.5, y: 27 },
+            stickers: { x: 239.5, y: 30 },
+            soldaduraMalEscoriada: { x: 239.5, y: 32.5 },
+            drenaje: { x: 239.5, y: 38.5 }
         },
         aspectosNo: {
-            x: 246 // X para NO (todas usan la misma X)
+            x: 245 // X para NO (todas usan la misma X)
         },
         otros: { x: 197, y: 46 },
 
@@ -107,7 +107,7 @@ export class TemplatePdfService {
             mes: { x: 181, y: 51 },
             año: { x: 187, y: 51 }
         },
-        horaInferior: { x: 179.2, y: 55 },
+        horaInferior: { x: 179.1, y: 55 },
 
         // === NÚMERO DE DOCUMENTO ===
         documentNumber: { x: 270, y: 52 },
@@ -351,10 +351,10 @@ export class TemplatePdfService {
             if (aspectCoord) {
                 if (formData[field]) {
                     // Si está marcado, poner X en SI
-                    this.doc.text('X', aspectCoord.x, aspectCoord.y);
+                    this.doc.text('XX', aspectCoord.x, aspectCoord.y);
                 } else {
                     // Si no está marcado, poner X en NO
-                    this.doc.text('X', coords.aspectosNo.x, aspectCoord.y);
+                    this.doc.text('XX', coords.aspectosNo.x, aspectCoord.y);
                 }
             }
         });
