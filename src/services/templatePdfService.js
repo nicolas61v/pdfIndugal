@@ -101,7 +101,7 @@ export class TemplatePdfService {
             mes: { x: 180, y: 33 },
             año: { x: 188, y: 33 }
         },
-        horaSuperior: { x: 177, y: 38 },
+        horaSuperior: { x: 177.2, y: 38 },
         fechaInferior: {
             dia: { x: 173.5, y: 51 },
             mes: { x: 181, y: 51 },
